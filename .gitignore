@@ -6,3 +6,9 @@ coverage/
 *.log
 .env*
 !.env.example
+
+# Local temp data & databases
+chroma_db/
+data_files/
+__pycache__/
+**/__pycache__/
