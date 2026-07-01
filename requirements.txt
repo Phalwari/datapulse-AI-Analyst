@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+duckdb
+google-genai
+langgraph
+chromadb
+sentence-transformers
+pandas
+plotly
+pydantic
+python-dotenv

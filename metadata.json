@@ -1,0 +1,6 @@
+{
+  "name": "AI Data Analyst Agent",
+  "description": "An AI spreadsheet analyst that scans CSV datasets, produces diagnostic reports, maps column descriptors, and recommends interactive Recharts visualizations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
