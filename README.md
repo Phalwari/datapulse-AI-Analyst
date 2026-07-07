@@ -1,3 +1,13 @@
+---
+title: DataPulse AI Analyst
+emoji: 📊
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 8000
+pinned: false
+---
+
 # DataPulse AI Analyst 📊🤖
 > **Autonomous Multi-Agent Data Conversational & Visualization Platform**
 
