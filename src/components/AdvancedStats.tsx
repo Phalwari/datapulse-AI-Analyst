@@ -13,7 +13,7 @@ import {
   ResponsiveContainer,
   ReferenceLine
 } from 'recharts';
-import { TrendingUp, AlertTriangle, Activity, Pin, HelpCircle, Check, Play, ChevronRight } from 'lucide-react';
+import { TrendingUp, AlertTriangle, Activity, Pin, HelpCircle, Check, Play, ChevronRight, Sparkles } from 'lucide-react';
 
 interface AdvancedStatsProps {
   dataset: Dataset;
@@ -335,15 +335,15 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Tab Switcher */}
-      <div className="bg-white border border-gray-100 rounded-xl p-2 flex gap-2">
+      <div className="bg-slate-50 border border-slate-100 p-1.5 flex gap-1.5 rounded-2xl max-w-3xl mx-auto shadow-2xs">
         <button
           onClick={() => setStatTab('regression')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-sans font-medium transition cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-2.5 py-3 rounded-xl text-xs font-sans font-bold transition-all duration-150 cursor-pointer ${
             statTab === 'regression'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-600 hover:bg-gray-50'
+              ? 'bg-white text-indigo-600 shadow-xs border border-slate-100/50'
+              : 'text-slate-500 hover:text-slate-850 hover:bg-white/45'
           }`}
         >
           <TrendingUp className="w-4 h-4" />
@@ -352,10 +352,10 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
 
         <button
           onClick={() => setStatTab('forecasting')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-sans font-medium transition cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-2.5 py-3 rounded-xl text-xs font-sans font-bold transition-all duration-150 cursor-pointer ${
             statTab === 'forecasting'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-600 hover:bg-gray-50'
+              ? 'bg-white text-indigo-600 shadow-xs border border-slate-100/50'
+              : 'text-slate-500 hover:text-slate-850 hover:bg-white/45'
           }`}
         >
           <Activity className="w-4 h-4" />
@@ -364,10 +364,10 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
 
         <button
           onClick={() => setStatTab('anomaly')}
-          className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-lg text-xs font-sans font-medium transition cursor-pointer ${
+          className={`flex-1 flex items-center justify-center gap-2.5 py-3 rounded-xl text-xs font-sans font-bold transition-all duration-150 cursor-pointer ${
             statTab === 'anomaly'
-              ? 'bg-blue-600 text-white shadow-sm'
-              : 'text-gray-600 hover:bg-gray-50'
+              ? 'bg-white text-indigo-600 shadow-xs border border-slate-100/50'
+              : 'text-slate-500 hover:text-slate-850 hover:bg-white/45'
           }`}
         >
           <AlertTriangle className="w-4 h-4" />
@@ -376,29 +376,29 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
       </div>
 
       {/* Workspace Area */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Controls Panel */}
-        <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-xs space-y-5 h-fit">
-          <div className="pb-2 border-b border-gray-50">
-            <h3 className="font-sans font-medium text-gray-900 text-sm tracking-tight capitalize">
-              {statTab} Configuration
+        <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6 h-fit">
+          <div className="pb-3.5 border-b border-slate-100">
+            <h3 className="font-sans font-bold text-slate-800 text-sm tracking-tight capitalize">
+              {statTab} Parameters
             </h3>
-            <p className="text-[11px] text-gray-400 mt-1">
+            <p className="text-[10px] text-slate-400 mt-1 font-sans">
               Refine parameters below to compute real-time statistical functions.
             </p>
           </div>
 
           {/* 1. REGRESSION CONTROLS */}
           {statTab === 'regression' && (
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Independent variable (X)
                 </label>
                 <select
                   value={regX}
                   onChange={(e) => setRegX(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 rounded-lg bg-white"
+                  className="w-full text-xs font-mono px-4 py-2.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 rounded-xl bg-slate-50/50 text-slate-700 outline-none cursor-pointer"
                 >
                   {numericColumns.map(col => (
                     <option key={col.name} value={col.name}>{col.name}</option>
@@ -406,14 +406,14 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Dependent variable (Y)
                 </label>
                 <select
                   value={regY}
                   onChange={(e) => setRegY(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 rounded-lg bg-white"
+                  className="w-full text-xs font-mono px-4 py-2.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 rounded-xl bg-slate-50/50 text-slate-700 outline-none cursor-pointer"
                 >
                   {numericColumns.map(col => (
                     <option key={col.name} value={col.name}>{col.name}</option>
@@ -421,14 +421,14 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                 </select>
               </div>
 
-              <div className="bg-blue-50/40 p-3 rounded-lg border border-blue-150/40 text-[11px] font-sans text-blue-800 leading-relaxed">
-                <strong>Methodology:</strong> Linear regression estimates the relationship between X and Y by fitting a straight trend line equation: <code className="font-mono bg-blue-100/60 px-1 rounded">Y = mX + c</code>, calculating slope and R-squared fit.
+              <div className="bg-indigo-50/40 p-4 rounded-2xl border border-indigo-100/50 text-xs font-sans text-indigo-900 leading-relaxed font-medium">
+                <strong>Methodology:</strong> Linear regression estimates the relationship between X and Y by fitting a straight trend line equation: <code className="font-mono bg-white/80 border border-indigo-100/40 px-1.5 py-0.5 rounded text-indigo-700">Y = mX + c</code>, calculating slope and R-squared fit.
               </div>
 
               <button
                 onClick={handlePinRegression}
                 disabled={pinnedIds.includes(`reg_${regX}_vs_${regY}`)}
-                className="w-full py-2 bg-slate-900 hover:bg-slate-950 disabled:bg-gray-100 disabled:text-gray-400 text-white rounded-lg text-xs font-sans font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-xl text-xs font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-indigo-600/10 disabled:shadow-none"
               >
                 <Pin className="w-3.5 h-3.5" />
                 <span>{pinnedIds.includes(`reg_${regX}_vs_${regY}`) ? 'Pinned to Dashboard' : 'Pin Regression Stats'}</span>
@@ -438,15 +438,15 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
 
           {/* 2. FORECASTING CONTROLS */}
           {statTab === 'forecasting' && (
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Chronological Column (X)
                 </label>
                 <select
                   value={forecastX}
                   onChange={(e) => setForecastX(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 rounded-lg bg-white"
+                  className="w-full text-xs font-mono px-4 py-2.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 rounded-xl bg-slate-50/50 text-slate-700 outline-none cursor-pointer"
                 >
                   {dateAndNumColumns.map(col => (
                     <option key={col.name} value={col.name}>{col.name}</option>
@@ -454,14 +454,14 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Measure Variable (Y)
                 </label>
                 <select
                   value={forecastY}
                   onChange={(e) => setForecastY(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 rounded-lg bg-white"
+                  className="w-full text-xs font-mono px-4 py-2.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 rounded-xl bg-slate-50/50 text-slate-700 outline-none cursor-pointer"
                 >
                   {numericColumns.map(col => (
                     <option key={col.name} value={col.name}>{col.name}</option>
@@ -469,36 +469,36 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+              <div className="space-y-2.5">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Forecasting Method
                 </label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     onClick={() => setForecastMethod('linear')}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-medium text-center cursor-pointer ${
+                    className={`py-2 px-2.5 rounded-xl border text-xs font-bold text-center cursor-pointer transition-all duration-150 ${
                       forecastMethod === 'linear'
-                        ? 'bg-blue-50 border-blue-200 text-blue-700'
-                        : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-2xs'
+                        : 'bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100'
                     }`}
                   >
-                    Linear Extrapolation
+                    Linear Fit
                   </button>
                   <button
                     onClick={() => setForecastMethod('sma')}
-                    className={`py-1.5 px-2 rounded-lg border text-xs font-medium text-center cursor-pointer ${
+                    className={`py-2 px-2.5 rounded-xl border text-xs font-bold text-center cursor-pointer transition-all duration-150 ${
                       forecastMethod === 'sma'
-                        ? 'bg-blue-50 border-blue-200 text-blue-700'
-                        : 'bg-gray-50 border-gray-100 text-gray-600 hover:bg-gray-100'
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-2xs'
+                        : 'bg-slate-50 border-slate-100 text-slate-600 hover:bg-slate-100'
                     }`}
                   >
-                    Moving Average
+                    Moving Avg
                   </button>
                 </div>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+              <div className="space-y-2.5">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Future Prediction Steps (+{forecastPeriods} steps)
                 </label>
                 <input
@@ -507,19 +507,19 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                   max="10"
                   value={forecastPeriods}
                   onChange={(e) => setForecastPeriods(Number(e.target.value))}
-                  className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
-                <div className="flex justify-between text-[10px] text-gray-400 font-mono">
-                  <span>1 step</span>
-                  <span>5 steps</span>
-                  <span>10 steps</span>
+                <div className="flex justify-between text-[9px] text-slate-400 font-mono font-bold">
+                  <span>1 period</span>
+                  <span>5 periods</span>
+                  <span>10 periods</span>
                 </div>
               </div>
 
               <button
                 onClick={handlePinForecast}
                 disabled={pinnedIds.includes(`fc_${forecastX}_${forecastY}`)}
-                className="w-full py-2 bg-slate-900 hover:bg-slate-950 disabled:bg-gray-100 disabled:text-gray-400 text-white rounded-lg text-xs font-sans font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-xl text-xs font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-indigo-600/10 disabled:shadow-none"
               >
                 <Pin className="w-3.5 h-3.5" />
                 <span>{pinnedIds.includes(`fc_${forecastX}_${forecastY}`) ? 'Pinned to Dashboard' : 'Pin Forecast Chart'}</span>
@@ -529,15 +529,15 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
 
           {/* 3. ANOMALY CONTROLS */}
           {statTab === 'anomaly' && (
-            <div className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+            <div className="space-y-5">
+              <div className="space-y-2">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Scan Metric Variable
                 </label>
                 <select
                   value={anomalyCol}
                   onChange={(e) => setAnomalyCol(e.target.value)}
-                  className="w-full text-xs font-mono px-3 py-2 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 rounded-lg bg-white"
+                  className="w-full text-xs font-mono px-4 py-2.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 rounded-xl bg-slate-50/50 text-slate-700 outline-none cursor-pointer"
                 >
                   {numericColumns.map(col => (
                     <option key={col.name} value={col.name}>{col.name}</option>
@@ -545,8 +545,8 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                 </select>
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold block">
+              <div className="space-y-2.5">
+                <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
                   Z-Score Sensitivity ({zThreshold}σ)
                 </label>
                 <input
@@ -556,16 +556,16 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                   step="0.5"
                   value={zThreshold}
                   onChange={(e) => setZThreshold(parseFloat(e.target.value))}
-                  className="w-full h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer accent-blue-600"
+                  className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-indigo-600"
                 />
-                <div className="flex justify-between text-[10px] text-gray-400 font-mono">
+                <div className="flex justify-between text-[9px] text-slate-400 font-mono font-bold">
                   <span>1.0σ (Sensitive)</span>
                   <span>2.0σ (Standard)</span>
                   <span>3.0σ (Conservative)</span>
                 </div>
               </div>
 
-              <div className="bg-amber-50 text-amber-900 border border-amber-100 p-3 rounded-lg text-[11px] font-sans leading-relaxed flex gap-2">
+              <div className="bg-amber-50 text-amber-900 border border-amber-100/70 p-4 rounded-2xl text-[11px] font-sans leading-relaxed font-medium flex gap-2.5">
                 <AlertTriangle className="w-4 h-4 text-amber-600 flex-shrink-0 mt-0.5" />
                 <span>Values lying beyond {zThreshold} standard deviations away from the mathematical mean of {anomalyCol} will be flagged as anomalies.</span>
               </div>
@@ -573,7 +573,7 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
               <button
                 onClick={handlePinAnomalies}
                 disabled={pinnedIds.includes(`anom_${anomalyCol}_z_${zThreshold}`)}
-                className="w-full py-2 bg-slate-900 hover:bg-slate-950 disabled:bg-gray-100 disabled:text-gray-400 text-white rounded-lg text-xs font-sans font-medium transition flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-100 disabled:text-slate-400 text-white rounded-xl text-xs font-sans font-bold transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md shadow-indigo-600/10 disabled:shadow-none"
               >
                 <Pin className="w-3.5 h-3.5" />
                 <span>{pinnedIds.includes(`anom_${anomalyCol}_z_${zThreshold}`) ? 'Pinned to Dashboard' : 'Pin Anomaly Report'}</span>
@@ -587,12 +587,12 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
           
           {/* 1. REGRESSION OUTPUT */}
           {statTab === 'regression' && regressionResults && (
-            <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-xs space-y-6">
-              <div className="flex justify-between items-center pb-3 border-b border-gray-50">
-                <h3 className="font-sans font-medium text-gray-900 text-sm tracking-tight">
-                  Independent Variable relationship map
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 className="font-sans font-bold text-slate-800 text-sm tracking-tight">
+                  Independent Variable Relationship Map
                 </h3>
-                <span className="text-[10px] font-mono bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full font-bold">
+                <span className="text-[10px] font-mono bg-indigo-50 border border-indigo-100 text-indigo-600 px-3 py-1 rounded-full font-bold">
                   {regressionResults.nSize} data steps processed
                 </span>
               </div>
@@ -601,65 +601,67 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                    <CartesianGrid stroke="#f3f4f6" />
-                    <XAxis type="number" dataKey="xVal" name={regX} tick={{ fill: '#6b7280', fontSize: 11 }} />
-                    <YAxis type="number" dataKey="yVal" name={regY} tick={{ fill: '#6b7280', fontSize: 11 }} />
-                    <Tooltip cursor={{ strokeDasharray: '3 3' }} />
-                    <Legend wrapperStyle={{ fontSize: '11px' }} />
-                    <Scatter name="Raw data row" data={regressionResults.points} fill="#3b82f6" />
-                    <Scatter name="Least-Squares Regression Trend" data={regressionResults.points} fill="#10b981" line shape="circle" />
+                    <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" />
+                    <XAxis type="number" dataKey="xVal" name={regX} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                    <YAxis type="number" dataKey="yVal" name={regY} tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                    <Tooltip cursor={{ strokeDasharray: '3 3' }} contentStyle={{ fontSize: '11px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px -2px rgba(0,0,0,0.05)' }} />
+                    <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
+                    <Scatter name="Raw data row" data={regressionResults.points} fill="#4f46e5" />
+                    <Scatter name="Least-Squares Regression Trend" data={regressionResults.points} fill="#0d9488" line shape="circle" />
                   </ScatterChart>
                 </ResponsiveContainer>
               </div>
 
               {/* Stats blocks */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3 border-t border-gray-50">
-                <div className="bg-gray-50 p-3 rounded-lg text-center">
-                  <div className="text-[10px] font-mono text-gray-400 uppercase">Pearson (r)</div>
-                  <div className={`text-sm font-semibold mt-1 font-mono ${regressionResults.correlation > 0 ? 'text-emerald-600' : 'text-amber-600'}`}>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-3">
+                <div className="bg-slate-50 border border-slate-100/60 p-4 rounded-2xl text-center shadow-2xs">
+                  <div className="text-[9px] font-mono text-slate-400 uppercase font-bold tracking-wider">Pearson (r)</div>
+                  <div className={`text-base font-extrabold mt-1 font-mono ${regressionResults.correlation > 0 ? 'text-teal-600' : 'text-amber-600'}`}>
                     {regressionResults.correlation}
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-3 rounded-lg text-center">
-                  <div className="text-[10px] font-mono text-gray-400 uppercase">R-Squared (R²)</div>
-                  <div className="text-sm font-semibold mt-1 font-mono text-gray-800">
+                <div className="bg-slate-50 border border-slate-100/60 p-4 rounded-2xl text-center shadow-2xs">
+                  <div className="text-[9px] font-mono text-slate-400 uppercase font-bold tracking-wider">R-Squared (R²)</div>
+                  <div className="text-base font-extrabold mt-1 font-mono text-slate-800">
                     {regressionResults.rSquared}
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-3 rounded-lg text-center">
-                  <div className="text-[10px] font-mono text-gray-400 uppercase">Trend Slope (m)</div>
-                  <div className="text-sm font-semibold mt-1 font-mono text-gray-800">
+                <div className="bg-slate-50 border border-slate-100/60 p-4 rounded-2xl text-center shadow-2xs">
+                  <div className="text-[9px] font-mono text-slate-400 uppercase font-bold tracking-wider">Slope (m)</div>
+                  <div className="text-base font-extrabold mt-1 font-mono text-slate-800">
                     {regressionResults.slope}
                   </div>
                 </div>
 
-                <div className="bg-gray-50 p-3 rounded-lg text-center">
-                  <div className="text-[10px] font-mono text-gray-400 uppercase">Intercept (c)</div>
-                  <div className="text-sm font-semibold mt-1 font-mono text-gray-800">
+                <div className="bg-slate-50 border border-slate-100/60 p-4 rounded-2xl text-center shadow-2xs">
+                  <div className="text-[9px] font-mono text-slate-400 uppercase font-bold tracking-wider">Intercept (c)</div>
+                  <div className="text-base font-extrabold mt-1 font-mono text-slate-800">
                     {regressionResults.intercept}
                   </div>
                 </div>
               </div>
 
               {/* Text interpretation */}
-              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl text-white">
-                <h4 className="text-xs font-mono font-semibold text-slate-400 uppercase mb-2">
-                  Statistical Method Interpretation
+              <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950 border border-slate-800 p-5 rounded-2xl text-white relative overflow-hidden shadow-sm">
+                <div className="absolute right-0 bottom-0 w-36 h-36 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                <h4 className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Statistical Model Interpretation</span>
                 </h4>
                 <p className="text-xs leading-relaxed font-sans text-slate-200">
                   {regressionResults.rSquared > 0.6 ? (
                     <span>
-                      There is a <strong>strong correlation</strong> ({regressionResults.correlation}) explaining {(regressionResults.rSquared * 100).toFixed(1)}% of variance. The fitted trendline equation is <code className="font-mono text-emerald-400">Y = {regressionResults.slope}X + {regressionResults.intercept}</code>. Every incremental unit of {regX} is estimated to trigger a shift of {regressionResults.slope} in {regY}.
+                      There is a <strong className="text-white font-bold">strong correlation</strong> ({regressionResults.correlation}) explaining {(regressionResults.rSquared * 100).toFixed(1)}% of variance. The fitted trendline equation is <code className="font-mono text-teal-400 bg-teal-500/10 px-1.5 py-0.5 rounded border border-teal-500/25">Y = {regressionResults.slope}X + {regressionResults.intercept}</code>. Every incremental unit of {regX} is estimated to trigger a shift of {regressionResults.slope} in {regY}.
                     </span>
                   ) : regressionResults.rSquared > 0.2 ? (
                     <span>
-                      There is a <strong>moderate association</strong> ({regressionResults.correlation}) explaining {(regressionResults.rSquared * 100).toFixed(1)}% of variance. While a positive/negative trend exists, other auxiliary factors in the dataset likely influence {regY}.
+                      There is a <strong className="text-white font-bold">moderate association</strong> ({regressionResults.correlation}) explaining {(regressionResults.rSquared * 100).toFixed(1)}% of variance. While a positive/negative trend exists, other auxiliary factors in the dataset likely influence {regY}.
                     </span>
                   ) : (
                     <span>
-                      There is <strong>weak or negligible correlation</strong> ({regressionResults.correlation}) between {regX} and {regY}. A linear equation cannot accurately fit or explain variations here.
+                      There is <strong className="text-white font-bold">weak or negligible correlation</strong> ({regressionResults.correlation}) between {regX} and {regY}. A linear equation cannot accurately fit or explain variations here.
                     </span>
                   )}
                 </p>
@@ -669,12 +671,12 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
 
           {/* 2. FORECASTING OUTPUT */}
           {statTab === 'forecasting' && forecastResults && (
-            <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-xs space-y-6">
-              <div className="flex justify-between items-center pb-3 border-b border-gray-50">
-                <h3 className="font-sans font-medium text-gray-900 text-sm tracking-tight">
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 className="font-sans font-bold text-slate-800 text-sm tracking-tight">
                   Time Series Projection Workspace
                 </h3>
-                <span className="text-[10px] font-mono bg-blue-50 text-blue-600 px-2.5 py-0.5 rounded-full font-bold">
+                <span className="text-[10px] font-mono bg-indigo-50 border border-indigo-100 text-indigo-600 px-3 py-1 rounded-full font-bold">
                   {forecastResults.methodName}
                 </span>
               </div>
@@ -683,24 +685,26 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
               <div className="h-64 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={forecastResults.combinedSeries} margin={{ top: 10, right: 10, left: -10, bottom: 5 }}>
-                    <CartesianGrid stroke="#f3f4f6" strokeDasharray="3 3" />
-                    <XAxis dataKey="label" tick={{ fill: '#6b7280', fontSize: 10 }} />
-                    <YAxis tick={{ fill: '#6b7280', fontSize: 11 }} />
-                    <Tooltip />
-                    <Legend wrapperStyle={{ fontSize: '11px' }} />
-                    <Line type="monotone" name="Historical actuals" dataKey="actual" stroke="#2563eb" strokeWidth={2.5} connectNulls />
-                    <Line type="monotone" name="Forecast Model fit" dataKey="forecast" stroke="#ea580c" strokeDasharray="4 4" strokeWidth={2} connectNulls />
+                    <CartesianGrid stroke="#f1f5f9" strokeDasharray="3 3" />
+                    <XAxis dataKey="label" tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                    <YAxis tick={{ fill: '#94a3b8', fontSize: 10 }} />
+                    <Tooltip contentStyle={{ fontSize: '11px', borderRadius: '12px', border: '1px solid #e2e8f0', boxShadow: '0 4px 20px -2px rgba(0,0,0,0.05)' }} />
+                    <Legend wrapperStyle={{ fontSize: '11px', fontWeight: 'bold' }} />
+                    <Line type="monotone" name="Historical actuals" dataKey="actual" stroke="#4f46e5" strokeWidth={2.5} connectNulls />
+                    <Line type="monotone" name="Forecast Model fit" dataKey="forecast" stroke="#ea580c" strokeDasharray="4 4" strokeWidth={2.5} connectNulls />
                   </LineChart>
                 </ResponsiveContainer>
               </div>
 
               {/* Summary explanations */}
-              <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl text-white">
-                <h4 className="text-xs font-mono font-semibold text-slate-400 uppercase mb-2">
-                  Forecasting Insight
+              <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950 border border-slate-800 p-5 rounded-2xl text-white relative overflow-hidden shadow-sm">
+                <div className="absolute right-0 bottom-0 w-36 h-36 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                <h4 className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Forecasting Insight</span>
                 </h4>
                 <p className="text-xs leading-relaxed font-sans text-slate-200">
-                  Using <strong>{forecastResults.methodName}</strong>, the system analyzed past records and projected {forecastPeriods} intervals ahead. This allows teams to identify seasonless, standard demand growth curves, calculate future inventory budgets, or target customer acquisition trajectories seamlessly.
+                  Using <strong className="text-white font-bold">{forecastResults.methodName}</strong>, the system analyzed past records and projected {forecastPeriods} intervals ahead. This allows teams to identify seasonless, standard growth curves, calculate future budgets, or forecast targets with mathematical assurance.
                 </p>
               </div>
             </div>
@@ -708,48 +712,48 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
 
           {/* 3. ANOMALY OUTPUT */}
           {statTab === 'anomaly' && anomalyResults && (
-            <div className="bg-white border border-gray-100 rounded-xl p-5 shadow-xs space-y-6">
-              <div className="flex justify-between items-center pb-3 border-b border-gray-50">
-                <h3 className="font-sans font-medium text-gray-900 text-sm tracking-tight">
-                  Dynamic Extreme Outliers Diagnostic
+            <div className="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm space-y-6">
+              <div className="flex justify-between items-center pb-3 border-b border-slate-100">
+                <h3 className="font-sans font-bold text-slate-800 text-sm tracking-tight">
+                  Dynamic Outlier Diagnostics
                 </h3>
-                <span className="text-[10px] font-mono bg-amber-50 text-amber-700 border border-amber-100 px-2.5 py-0.5 rounded-full font-bold">
+                <span className="text-[10px] font-mono bg-amber-50 border border-amber-100 text-amber-700 px-3 py-1 rounded-full font-bold">
                   Mean: {anomalyResults.mean} • StdDev: {anomalyResults.stdDev}
                 </span>
               </div>
 
               {anomalyResults.anomalies.length === 0 ? (
-                <div id="no-anomalies-state" className="p-8 text-center bg-gray-50/55 rounded-xl border border-gray-100 max-w-md mx-auto">
-                  <div className="p-3 bg-white text-emerald-500 rounded-full border border-emerald-100 w-fit mx-auto mb-3">
+                <div id="no-anomalies-state" className="p-10 text-center bg-slate-50/50 rounded-2xl border border-slate-100 max-w-md mx-auto shadow-2xs">
+                  <div className="p-3 bg-white text-emerald-500 rounded-2xl border border-slate-100 w-fit mx-auto mb-4 shadow-2xs">
                     <Check className="w-5 h-5" />
                   </div>
-                  <h4 className="font-sans font-medium text-gray-900 text-xs tracking-tight">
-                    Clean Dataset!
+                  <h4 className="font-sans font-bold text-slate-800 text-sm tracking-tight">
+                    Clean Dataset Scope!
                   </h4>
-                  <p className="text-xs text-gray-400 mt-1">
-                    No points exceeded {zThreshold} standard deviations. The values in {anomalyCol} reside in acceptable boundaries.
+                  <p className="text-xs text-slate-400 mt-1.5 font-sans leading-relaxed">
+                    No points exceeded the {zThreshold}σ standard deviations. All record entries for {anomalyCol} reside safely within calculated bounds.
                   </p>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <div className="overflow-x-auto border border-gray-100 rounded-lg">
+                  <div className="overflow-x-auto border border-slate-100 rounded-2xl">
                     <table className="w-full min-w-max text-left border-collapse">
                       <thead>
-                        <tr className="bg-gray-50 border-b border-gray-150 text-xs font-semibold text-gray-700">
-                          <th className="px-4 py-2.5 font-sans">Row Index</th>
-                          <th className="px-4 py-2.5 font-sans">Outlier Value</th>
-                          <th className="px-4 py-2.5 font-sans">Z-Score Deviation</th>
-                          <th className="px-4 py-2.5 font-sans">Threshold Severity</th>
+                        <tr className="bg-slate-50 border-b border-slate-100 text-xs font-bold text-slate-700">
+                          <th className="px-5 py-3 font-sans">Row Index</th>
+                          <th className="px-5 py-3 font-sans">Outlier Value</th>
+                          <th className="px-5 py-3 font-sans">Z-Score Deviation</th>
+                          <th className="px-5 py-3 font-sans">Threshold Severity</th>
                         </tr>
                       </thead>
                       <tbody>
                         {anomalyResults.anomalies.map((anom, idx) => (
-                          <tr key={idx} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/40 text-xs font-mono text-gray-600">
-                            <td className="px-4 py-2">Row #{anom.rowIndex}</td>
-                            <td className="px-4 py-2 font-bold text-gray-800">{anom.val}</td>
-                            <td className="px-4 py-2 text-rose-600 font-semibold">{anom.zScore}</td>
-                            <td className="px-4 py-2">
-                              <span className="px-2 py-0.5 bg-rose-50 text-rose-700 rounded text-[10px] font-semibold uppercase">
+                          <tr key={idx} className="border-b border-slate-50 last:border-0 hover:bg-slate-50/30 text-xs font-mono text-slate-600 transition-colors">
+                            <td className="px-5 py-3 font-medium text-slate-400">Row #{anom.rowIndex}</td>
+                            <td className="px-5 py-3 font-extrabold text-slate-800">{anom.val}</td>
+                            <td className="px-5 py-3 text-rose-600 font-extrabold">{anom.zScore}</td>
+                            <td className="px-5 py-3">
+                              <span className="px-2.5 py-1 bg-rose-50 border border-rose-100/50 text-rose-700 rounded-lg text-[9px] font-extrabold uppercase">
                                 {anom.desc}
                               </span>
                             </td>
@@ -759,9 +763,11 @@ export const AdvancedStats: React.FC<AdvancedStatsProps> = ({ dataset, onPinItem
                     </table>
                   </div>
 
-                  <div className="bg-slate-900 border border-slate-800 p-4 rounded-xl text-white">
-                    <h4 className="text-xs font-mono font-semibold text-slate-400 uppercase mb-2">
-                      Anomaly Interpretation
+                  <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950 border border-slate-800 p-5 rounded-2xl text-white relative overflow-hidden shadow-sm">
+                    <div className="absolute right-0 bottom-0 w-36 h-36 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                    <h4 className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-widest mb-2.5 flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      <span>Anomaly Interpretation</span>
                     </h4>
                     <p className="text-xs leading-relaxed font-sans text-slate-200">
                       Detected {anomalyResults.anomalies.length} outliers in the {anomalyCol} column. Standard anomalies are often driven by seasonal events, data entry mistakes, major marketing spikes, or systemic anomalies that require investigation.

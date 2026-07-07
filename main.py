@@ -53,7 +53,7 @@ class ChatRequest(BaseModel):
 # Helper to call Groq API
 def call_groq(prompt: str, system_instruction: str = "", json_mode: bool = False) -> str:
     key = os.getenv("GROQ_API_KEY")
-    model = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
+    model = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
     if not key:
         raise HTTPException(status_code=500, detail="GROQ_API_KEY environment variable is not set.")
         
@@ -86,15 +86,30 @@ def health_check():
     import datetime
     return {"status": "ok", "time": datetime.datetime.utcnow().isoformat()}
 
+def get_full_dataset_path(csv_name: str) -> str:
+    # 1. Check parent workspace directory
+    parent_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", csv_name))
+    if os.path.exists(parent_path):
+        return parent_path
+    
+    # 2. Check Windows Downloads directory
+    downloads_path = os.path.join("C:\\Users\\Umer\\Downloads", csv_name)
+    if os.path.exists(downloads_path):
+        return downloads_path
+        
+    # 3. Fall back to sample data path
+    return f"../data_files/{csv_name}"
+
 @app.post("/api/analyze-metadata")
 async def analyze_metadata(req: AnalyzeMetadataRequest):
     try:
         csv_name = req.datasetSummary.name
-        csv_path = f"../data_files/{csv_name}"
+        csv_path = get_full_dataset_path(csv_name)
         
-        # Build pandas df and save it to file
-        df = pd.DataFrame(req.sampleRows)
-        df.to_csv(csv_path, index=False)
+        # Build pandas df and save it to file if full path doesn't exist
+        if csv_path == f"../data_files/{csv_name}":
+            df = pd.DataFrame(req.sampleRows)
+            df.to_csv(csv_path, index=False)
 
         # Store columns inside ChromaDB semantic layer
         store = SemanticStore()
@@ -170,9 +185,9 @@ async def chat_interaction(req: ChatRequest):
     try:
         last_message = req.messages[-1].text
         csv_name = req.datasetName
-        csv_path = f"../data_files/{csv_name}"
+        csv_path = get_full_dataset_path(csv_name)
 
-        if not os.path.exists(csv_path):
+        if csv_path == f"../data_files/{csv_name}" and not os.path.exists(csv_path):
             df = pd.DataFrame(req.sampleRows)
             df.to_csv(csv_path, index=False)
 

@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { PinnedItem, Dataset, VisualRecommendation } from '../types';
 import { InteractiveChart } from './InteractiveChart';
-import { LayoutDashboard, RefreshCw, Trash2, ArrowUp, ArrowDown, ClipboardList, TrendingUp, AlertTriangle, Calendar } from 'lucide-react';
+import { LayoutDashboard, RefreshCw, Trash2, ArrowUp, ArrowDown, ClipboardList, TrendingUp, AlertTriangle, Calendar, Layers, Sparkles } from 'lucide-react';
 
 interface CustomDashboardProps {
   dataset: Dataset;
@@ -22,7 +22,7 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
   // Trigger simulated/real refresh of computations
   const handleRefresh = () => {
     setIsRefreshing(true);
-    setRefreshNotice("Recalculating and updating data matrices across saved widgets...");
+    setRefreshNotice("Recalculating data matrices across saved widgets...");
     
     setTimeout(() => {
       setIsRefreshing(false);
@@ -55,33 +55,35 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
   return (
     <div className="space-y-6">
       {/* Dashboard Top Header Action Panel */}
-      <div className="bg-white border border-gray-150 rounded-xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+      <div className="bg-white border border-slate-100 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
         <div>
-          <div className="flex items-center gap-2">
-            <LayoutDashboard className="w-5 h-5 text-blue-600" />
-            <h2 className="font-sans font-semibold text-gray-950 text-base tracking-tight">
+          <div className="flex items-center gap-2.5">
+            <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+              <LayoutDashboard className="w-4 h-4" />
+            </div>
+            <h2 className="font-sans font-bold text-slate-800 text-base tracking-tight leading-none">
               Interactive Saved Dashboard Workspace
             </h2>
           </div>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-slate-400 mt-1.5 font-sans leading-relaxed">
             Build customized layouts of your pinned charts and advanced statistical models. Settings are saved in persistent storage.
           </p>
         </div>
 
         {pinnedItems.length > 0 && (
-          <div className="flex items-center gap-2 w-full sm:w-auto">
+          <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
             <button
               onClick={handleRefresh}
               disabled={isRefreshing}
-              className="flex-1 sm:flex-none py-2 px-3 bg-white hover:bg-gray-50 border border-gray-200 rounded-lg text-xs font-sans font-medium text-gray-700 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-50 transition"
+              className="flex-1 sm:flex-none py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-100 hover:border-slate-200 rounded-xl text-xs font-sans font-semibold text-slate-600 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition shadow-2xs"
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${isRefreshing ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${isRefreshing ? 'animate-spin' : ''}`} />
               <span>Refresh Widgets</span>
             </button>
 
             <button
               onClick={handleClearAll}
-              className="flex-1 sm:flex-none py-2 px-3 bg-red-50 hover:bg-red-100 border border-red-150 rounded-lg text-xs font-sans font-medium text-red-700 flex items-center justify-center gap-1.5 cursor-pointer transition"
+              className="flex-1 sm:flex-none py-2.5 px-4 bg-rose-50 hover:bg-rose-100/70 border border-rose-100 text-xs font-sans font-semibold text-rose-700 flex items-center justify-center gap-2 cursor-pointer transition rounded-xl"
             >
               <Trash2 className="w-3.5 h-3.5" />
               <span>Clear Dashboard</span>
@@ -92,37 +94,46 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
 
       {/* Action Notification Block */}
       {refreshNotice && (
-        <div className={`p-3 rounded-lg text-xs font-sans border transition-all duration-300 ${
+        <div className={`p-4 rounded-2xl text-xs font-sans border transition-all duration-300 shadow-2xs ${
           isRefreshing 
-            ? 'bg-blue-50 border-blue-150 text-blue-800 animate-pulse'
-            : 'bg-emerald-50 border-emerald-150 text-emerald-800'
+            ? 'bg-indigo-50 border-indigo-150 text-indigo-800 animate-pulse'
+            : 'bg-teal-50 border-teal-100 text-teal-800'
         }`}>
-          {refreshNotice}
+          <div className="flex items-center gap-2">
+            <span className={`w-1.5 h-1.5 rounded-full ${isRefreshing ? 'bg-indigo-500 animate-ping' : 'bg-teal-500'}`} />
+            <span className="font-medium">{refreshNotice}</span>
+          </div>
         </div>
       )}
 
       {/* Empty State Instructions */}
       {pinnedItems.length === 0 ? (
-        <div id="empty-dashboard" className="bg-white border border-gray-100 rounded-xl p-10 text-center max-w-xl mx-auto my-6 space-y-4">
-          <div className="w-12 h-12 bg-blue-50 rounded-full border border-blue-100 text-blue-600 flex items-center justify-center mx-auto">
-            <LayoutDashboard className="w-6 h-6" />
+        <div id="empty-dashboard" className="bg-white border border-slate-100 rounded-3xl p-12 text-center max-w-xl mx-auto my-8 space-y-6 shadow-xs">
+          <div className="relative">
+            <div className="w-16 h-16 bg-slate-50 rounded-2xl border border-slate-100/55 text-slate-400 flex items-center justify-center mx-auto shadow-2xs">
+              <LayoutDashboard className="w-8 h-8" />
+            </div>
+            <div className="absolute top-1/2 left-1/2 translate-x-3 -translate-y-5 p-1 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-500 shadow-2xs">
+              <Sparkles className="w-3.5 h-3.5" />
+            </div>
           </div>
           
-          <div className="space-y-1">
-            <h3 className="font-sans font-semibold text-gray-900 text-sm tracking-tight">
-              Your Dashboard Workspace is Empty
+          <div className="space-y-1.5">
+            <h3 className="font-sans font-bold text-slate-800 text-base tracking-tight">
+              Your Saved Dashboard is Empty
             </h3>
-            <p className="text-xs text-gray-400 max-w-sm mx-auto leading-relaxed">
+            <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed font-sans font-medium">
               Pin analysis cards, customized visual recommendations, or advanced mathematical regressions from other tabs to arrange them here.
             </p>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl text-left border border-gray-150/50 space-y-2 max-w-sm mx-auto">
-            <div className="text-[10px] font-mono uppercase tracking-wider text-gray-400 font-bold">
-              How to add widgets:
+          <div className="bg-slate-50/50 p-5 rounded-2xl text-left border border-slate-100 space-y-3 max-w-sm mx-auto shadow-2xs">
+            <div className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold flex items-center gap-1.5">
+              <Layers className="w-3.5 h-3.5 text-indigo-500" />
+              <span>How to add widgets:</span>
             </div>
-            <ul className="text-xs text-gray-600 space-y-1.5 list-disc list-inside font-sans">
-              <li>Click the bookmark <span className="font-semibold text-slate-800">Pin button</span> on any chart card.</li>
+            <ul className="text-xs text-slate-500 space-y-2 list-disc list-inside font-sans font-medium leading-relaxed">
+              <li>Click the bookmark <span className="font-bold text-slate-700">Pin button</span> on any chart card.</li>
               <li>Compute linear regressions or anomalies and pin the metrics summaries.</li>
               <li>Instruct the AI Copilot to construct visual assets, and pin them directly from the chat window!</li>
             </ul>
@@ -134,14 +145,14 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
           {pinnedItems.map((item, idx) => (
             <div
               key={item.id}
-              className="relative group border border-gray-200 hover:border-gray-300 bg-white rounded-xl shadow-xs transition duration-150 flex flex-col"
+              className="relative group border border-slate-100/90 hover:border-slate-200/80 bg-white rounded-3xl shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05),0_10px_20px_-10px_rgba(0,0,0,0.03)] hover:shadow-md hover:scale-[1.002] transition-all duration-250 flex flex-col overflow-hidden"
             >
               {/* Card Controls Overlay Header */}
-              <div className="absolute top-2 right-2 flex items-center gap-1 z-10 opacity-0 group-hover:opacity-100 transition duration-150 bg-white/90 p-1 rounded-lg border border-gray-100">
+              <div className="absolute top-4 right-4 flex items-center gap-1.5 z-20 opacity-0 group-hover:opacity-100 transition-all duration-200 bg-white/95 p-1 rounded-xl border border-slate-100 shadow-sm">
                 <button
                   onClick={() => handleMove(idx, 'up')}
                   disabled={idx === 0}
-                  className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-slate-800 disabled:opacity-30 cursor-pointer hover:bg-slate-50 rounded-lg transition"
                   title="Move Left/Up"
                 >
                   <ArrowUp className="w-3.5 h-3.5" />
@@ -149,14 +160,14 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
                 <button
                   onClick={() => handleMove(idx, 'down')}
                   disabled={idx === pinnedItems.length - 1}
-                  className="p-1 text-gray-400 hover:text-gray-700 disabled:opacity-30 cursor-pointer"
+                  className="p-1.5 text-slate-400 hover:text-slate-800 disabled:opacity-30 cursor-pointer hover:bg-slate-50 rounded-lg transition"
                   title="Move Right/Down"
                 >
                   <ArrowDown className="w-3.5 h-3.5" />
                 </button>
                 <button
                   onClick={() => onRemoveItem(item.id)}
-                  className="p-1 text-red-400 hover:text-red-600 cursor-pointer"
+                  className="p-1.5 text-rose-400 hover:text-rose-600 cursor-pointer hover:bg-rose-50 rounded-lg transition"
                   title="Remove from Dashboard"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
@@ -168,7 +179,7 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
                 <div className="flex-1">
                   <InteractiveChart
                     recommendation={item.chartConfig}
-                    rows={dataset.rows}
+                    rows={item.chartData || dataset.rows}
                     isPinned={true}
                     onPin={() => onRemoveItem(item.id)} // Act as unpin
                   />
@@ -177,22 +188,24 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
 
               {/* RENDER STATS SUMMARY WIDGET */}
               {item.type === 'stat' && item.statConfig && (
-                <div className="p-5 flex flex-col h-full justify-between flex-1 min-h-[300px]">
+                <div className="p-6 flex flex-col h-full justify-between flex-1 min-h-[300px]">
                   <div className="space-y-4">
                     <div className="flex items-start justify-between gap-3">
                       <div>
-                        <div className="flex items-center gap-1.5">
-                          {item.statConfig.type === 'regression' && <TrendingUp className="w-4 h-4 text-emerald-600" />}
-                          {item.statConfig.type === 'anomaly' && <AlertTriangle className="w-4 h-4 text-rose-600" />}
-                          {item.statConfig.type === 'forecast' && <ClipboardList className="w-4 h-4 text-blue-600" />}
-                          <h3 className="font-sans font-semibold text-gray-950 text-sm tracking-tight leading-tight">
+                        <div className="flex items-center gap-2">
+                          <div className="p-1.5 bg-slate-50 rounded-lg border border-slate-100/50">
+                            {item.statConfig.type === 'regression' && <TrendingUp className="w-4 h-4 text-teal-600" />}
+                            {item.statConfig.type === 'anomaly' && <AlertTriangle className="w-4 h-4 text-rose-600" />}
+                            {item.statConfig.type === 'forecast' && <ClipboardList className="w-4 h-4 text-indigo-600" />}
+                          </div>
+                          <h3 className="font-sans font-bold text-slate-800 text-sm tracking-tight leading-tight">
                             {item.statConfig.title}
                           </h3>
                         </div>
-                        <p className="text-xs text-gray-400 mt-1">{item.statConfig.description}</p>
+                        <p className="text-xs text-slate-400 mt-1.5 font-sans leading-relaxed">{item.statConfig.description}</p>
                       </div>
 
-                      <span className="text-[9px] font-mono uppercase bg-slate-100 text-slate-700 px-2 py-0.5 rounded-full font-bold">
+                      <span className="text-[9px] font-mono uppercase bg-slate-50 border border-slate-100 text-slate-500 px-2.5 py-1 rounded-lg font-extrabold">
                         {item.statConfig.type}
                       </span>
                     </div>
@@ -200,11 +213,11 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
                     {/* Metrics Grid */}
                     <div className="grid grid-cols-2 gap-3 pt-2">
                       {item.statConfig.summaryMetrics.map((met, mIdx) => (
-                        <div key={mIdx} className="bg-gray-50 border border-gray-150/40 p-3 rounded-lg">
-                          <div className="text-[9px] font-mono text-gray-400 uppercase tracking-tight truncate">
+                        <div key={mIdx} className="bg-slate-50/50 border border-slate-100 p-3.5 rounded-2xl shadow-2xs">
+                          <div className="text-[9px] font-mono text-slate-400 uppercase tracking-tight truncate font-bold">
                             {met.label}
                           </div>
-                          <div className="text-xs font-semibold font-mono text-gray-950 mt-1 truncate">
+                          <div className="text-sm font-extrabold font-mono text-slate-800 mt-1 truncate">
                             {met.value}
                           </div>
                         </div>
@@ -213,12 +226,12 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
                   </div>
 
                   {/* Card bottom timestamp marker */}
-                  <div className="pt-4 mt-4 border-t border-gray-100 flex items-center justify-between text-[10px] text-gray-400 font-mono">
+                  <div className="pt-4 mt-6 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono font-medium">
                     <div className="flex items-center gap-1">
-                      <Calendar className="w-3 h-3" />
+                      <Calendar className="w-3.5 h-3.5 text-slate-300" />
                       <span>Pinned: {item.pinnedAt}</span>
                     </div>
-                    <span>Math Model Active</span>
+                    <span className="text-indigo-500 uppercase tracking-wider font-extrabold text-[9px]">Model Active</span>
                   </div>
                 </div>
               )}

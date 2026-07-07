@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Dataset, VisualRecommendation } from '../types';
 import { InteractiveChart } from './InteractiveChart';
-import { Settings2, BarChart2, Plus, AlertCircle } from 'lucide-react';
+import { Settings2, BarChart2, AlertCircle, Sparkles, Sliders } from 'lucide-react';
 
 interface CustomChartBuilderProps {
   dataset: Dataset;
@@ -40,7 +40,7 @@ export const CustomChartBuilder: React.FC<CustomChartBuilderProps> = ({
     }
   };
 
-  // Compile visual recomendation model dynamically
+  // Compile visual recommendation model dynamically
   const recommendation = useMemo<VisualRecommendation | null>(() => {
     if (!xAxisKey || selectedYKeys.length === 0) return null;
 
@@ -58,17 +58,22 @@ export const CustomChartBuilder: React.FC<CustomChartBuilderProps> = ({
   }, [chartType, xAxisKey, selectedYKeys, customTitle]);
 
   return (
-    <div className="flex flex-col md:flex-row gap-6">
+    <div className="flex flex-col lg:flex-row gap-8">
       {/* Configuration Controls Sidebar */}
-      <div className="w-full md:w-80 bg-white border border-gray-100 rounded-xl p-5 shadow-xs flex-shrink-0 h-fit space-y-6">
-        <div className="flex items-center gap-2 pb-2 border-b border-gray-50">
-          <Settings2 className="w-4 h-4 text-blue-600" />
-          <h3 className="font-sans font-medium text-gray-900 text-sm tracking-tight">Manual Chart Studio</h3>
+      <div className="w-full lg:w-80 bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex-shrink-0 h-fit space-y-6">
+        <div className="flex items-center gap-2.5 pb-3.5 border-b border-slate-100">
+          <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+            <Settings2 className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-sans font-bold text-slate-800 text-sm tracking-tight">Manual Chart Studio</h3>
+            <p className="text-[10px] text-slate-400 font-mono mt-0.5">VISUAL WORKBENCH</p>
+          </div>
         </div>
 
         {/* 1. Chart Type Selection */}
-        <div className="space-y-2">
-          <label className="text-[11px] font-mono uppercase tracking-wider text-gray-500 font-bold block">
+        <div className="space-y-2.5">
+          <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
             Chart Layout
           </label>
           <div className="grid grid-cols-3 gap-2">
@@ -76,10 +81,10 @@ export const CustomChartBuilder: React.FC<CustomChartBuilderProps> = ({
               <button
                 key={type}
                 onClick={() => setChartType(type)}
-                className={`text-xs capitalize py-2 px-2.5 rounded-lg border font-medium transition duration-150 text-center ${
+                className={`text-xs capitalize py-2.5 px-3 rounded-xl border font-semibold transition-all duration-150 text-center cursor-pointer ${
                   chartType === type
-                    ? 'bg-blue-50 border-blue-200 text-blue-700'
-                    : 'bg-gray-50 hover:bg-gray-100/50 border-gray-100 text-gray-600'
+                    ? 'bg-indigo-600 border-indigo-600 text-white shadow-xs'
+                    : 'bg-slate-50 hover:bg-slate-100/70 border-slate-100 text-slate-600 hover:text-slate-800'
                 }`}
               >
                 {type}
@@ -89,8 +94,8 @@ export const CustomChartBuilder: React.FC<CustomChartBuilderProps> = ({
         </div>
 
         {/* 2. Title customization */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-mono uppercase tracking-wider text-gray-500 font-bold block">
+        <div className="space-y-2">
+          <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
             Chart Headline
           </label>
           <input
@@ -98,19 +103,19 @@ export const CustomChartBuilder: React.FC<CustomChartBuilderProps> = ({
             placeholder="Custom title (optional)"
             value={customTitle}
             onChange={(e) => setCustomTitle(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 text-xs rounded-lg bg-gray-50/20"
+            className="w-full px-4 py-2.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 text-xs rounded-xl bg-slate-50/50 font-sans font-medium text-slate-700 outline-none"
           />
         </div>
 
         {/* 3. X-Axis Selection */}
-        <div className="space-y-1.5">
-          <label className="text-[11px] font-mono uppercase tracking-wider text-gray-500 font-bold block">
+        <div className="space-y-2">
+          <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block">
             Dimension Name (X-Axis)
           </label>
           <select
             value={xAxisKey}
             onChange={(e) => setXAxisKey(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-200 focus:border-blue-500 focus:ring-1 focus:ring-blue-100 text-xs font-mono rounded-lg bg-white"
+            className="w-full px-4 py-2.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 text-xs font-mono rounded-xl bg-white text-slate-700 outline-none cursor-pointer"
           >
             {columns.map(col => (
               <option key={col.name} value={col.name}>
@@ -121,44 +126,47 @@ export const CustomChartBuilder: React.FC<CustomChartBuilderProps> = ({
         </div>
 
         {/* 4. Y-Axis Multi-metrics */}
-        <div className="space-y-2">
-          <label className="text-[11px] font-mono uppercase tracking-wider text-gray-500 font-bold block flex items-center justify-between">
+        <div className="space-y-2.5">
+          <label className="text-[10px] font-mono uppercase tracking-wider text-slate-400 font-extrabold block flex items-center justify-between">
             <span>Measure Metrics (Y-Axis)</span>
-            <span className="text-[10px] lowercase text-gray-400 font-normal normal-case">
+            <span className="text-[9px] lowercase text-slate-400 font-normal font-sans normal-case">
               Select 1 or 2
             </span>
           </label>
 
           {numericColumns.length === 0 ? (
-            <div className="p-3 bg-amber-50 text-amber-800 border border-amber-100 rounded-lg text-xs flex gap-2">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              <span>Could not detect any continuous numerical columns (e.g., currency, integers, fractions) to plot measures.</span>
+            <div className="p-4 bg-amber-50 text-amber-800 border border-amber-100/85 rounded-2xl text-xs flex gap-2.5 font-sans">
+              <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+              <span className="leading-relaxed font-medium">Could not detect any continuous numerical columns (e.g., currency, integers, fractions) to plot measures.</span>
             </div>
           ) : (
-            <div className="space-y-1.5 max-h-[160px] overflow-y-auto pr-1">
-              {numericColumns.map(col => (
-                <button
-                  key={col.name}
-                  onClick={() => handleToggleYKey(col.name)}
-                  className={`w-full text-left px-3 py-2 rounded-lg border text-xs font-mono transition duration-150 flex items-center justify-between ${
-                    selectedYKeys.includes(col.name)
-                      ? 'bg-blue-50/40 border-blue-200 text-blue-950 font-medium'
-                      : 'bg-gray-50 hover:bg-gray-100/50 border-gray-100 text-gray-600'
-                  }`}
-                >
-                  <span className="truncate">{col.name}</span>
-                  <span className="text-[10px] text-gray-400 flex items-center gap-0.5">
-                    {selectedYKeys.includes(col.name) ? 'Selected' : 'Plot'}
-                  </span>
-                </button>
-              ))}
+            <div className="space-y-2 max-h-[180px] overflow-y-auto pr-1">
+              {numericColumns.map(col => {
+                const isSelected = selectedYKeys.includes(col.name);
+                return (
+                  <button
+                    key={col.name}
+                    onClick={() => handleToggleYKey(col.name)}
+                    className={`w-full text-left px-4 py-2.5 rounded-xl border text-xs font-mono transition-all duration-150 flex items-center justify-between cursor-pointer ${
+                      isSelected
+                        ? 'bg-indigo-50/70 border-indigo-200 text-indigo-950 font-bold'
+                        : 'bg-slate-50 hover:bg-slate-100/70 border-slate-100 text-slate-600'
+                    }`}
+                  >
+                    <span className="truncate pr-2">{col.name}</span>
+                    <span className={`text-[9px] px-2 py-0.5 rounded-full font-sans font-bold uppercase shrink-0 ${isSelected ? 'bg-indigo-200 text-indigo-800' : 'bg-slate-100 text-slate-400'}`}>
+                      {isSelected ? 'Selected' : 'Plot'}
+                    </span>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>
       </div>
 
       {/* Render Output Workspace */}
-      <div className="flex-1 bg-white border border-gray-100 rounded-xl p-5 shadow-xs flex flex-col justify-center min-h-[380px]">
+      <div className="flex-1 bg-white border border-slate-100 rounded-3xl p-6 shadow-sm flex flex-col justify-center min-h-[460px]">
         {recommendation ? (
           <InteractiveChart
             recommendation={recommendation}
@@ -167,15 +175,21 @@ export const CustomChartBuilder: React.FC<CustomChartBuilderProps> = ({
             isPinned={pinnedIds.includes(recommendation.id)}
           />
         ) : (
-          <div id="builder-empty-state" className="flex flex-col items-center justify-center p-8 text-center text-gray-400 max-w-sm mx-auto">
-            <div className="p-3 bg-gray-50 rounded-full text-gray-300 mb-4 border border-gray-100">
-              <BarChart2 className="w-8 h-8" />
+          <div id="builder-empty-state" className="flex flex-col items-center justify-center p-8 text-center text-slate-400 max-w-sm mx-auto">
+            <div className="relative mb-6">
+              <div className="w-16 h-16 rounded-2xl bg-slate-50 flex items-center justify-center border border-slate-100/55 shadow-2xs">
+                <BarChart2 className="w-8 h-8 text-slate-400" />
+              </div>
+              <div className="absolute -top-1 -right-1 p-1 bg-indigo-50 border border-indigo-100 rounded-full text-indigo-500 shadow-2xs">
+                <Sliders className="w-3.5 h-3.5" />
+              </div>
             </div>
-            <h4 className="font-sans font-medium text-gray-900 text-sm tracking-tight mb-1">
+            
+            <h4 className="font-sans font-bold text-slate-800 text-base tracking-tight mb-2">
               Awaiting Configuration
             </h4>
-            <p className="font-sans text-xs text-gray-500 leading-normal">
-              Select at least one continuous dimension (X-Axis) and at least one plotted metric column (Y-Axis) from the studio dashboard to render a beautiful real-time visualization.
+            <p className="font-sans text-xs text-slate-400 leading-relaxed font-medium">
+              Select a continuous dimension for your X-Axis and choose up to two metrics for the Y-Axis in the controls sidebar to render a beautiful chart.
             </p>
           </div>
         )}

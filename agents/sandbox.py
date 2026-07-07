@@ -28,17 +28,19 @@ import pandas as pd
 import numpy as np
 import json
 import sys
+import os
+
+# Move to the secure temporary directory to isolate file outputs
+os.chdir(r"{temp_dir}")
 
 # Load the dataframe
 df = pd.read_csv(r"{csv_path}")
 
 # Run user code
 try:
-    # We execute the script in a clean namespace
     local_vars = {{"df": df}}
     exec('''{code}''', globals(), local_vars)
     
-    # Extract any generated results if present
     if "result" in local_vars:
         print("---RESULT_START---")
         print(json.dumps(local_vars["result"]))

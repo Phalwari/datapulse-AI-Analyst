@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import Papa from 'papaparse';
 import { SAMPLE_DATASETS, SampleDataset } from '../sampleData';
 import { Dataset, ColumnMetadata } from '../types';
-import { FileUp, Database, ArrowRight, Sparkles, Loader2 } from 'lucide-react';
+import { FileUp, Database, ArrowRight, Sparkles, Loader2, TableProperties, BarChart3, Binary } from 'lucide-react';
 
 interface DatasetSelectorProps {
   onDatasetLoaded: (dataset: Dataset) => void;
@@ -165,97 +165,136 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({ onDatasetLoade
   };
 
   return (
-    <div className="max-w-4xl mx-auto py-12 px-4">
-      {/* Hero Header */}
-      <div className="text-center mb-10">
-        <div className="inline-flex items-center justify-center p-2.5 bg-blue-50 text-blue-600 rounded-2xl mb-4">
-          <Sparkles className="w-8 h-8 animate-pulse text-blue-600" />
+    <div className="relative min-h-screen flex flex-col justify-center items-center py-16 px-4 overflow-hidden bg-slate-50">
+      {/* Decorative Grid & Fluid Radial Glow Backgrounds */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#e2e8f0_1px,transparent_1px),linear-gradient(to_bottom,#e2e8f0_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_40%,#000_70%,transparent_100%)] opacity-50" />
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-indigo-200/20 rounded-full blur-3xl pointer-events-none" />
+      <div className="absolute top-1/3 left-1/4 w-[300px] h-[300px] bg-blue-200/10 rounded-full blur-3xl pointer-events-none" />
+      
+      <div className="relative w-full max-w-4xl z-10">
+        {/* Brand Header */}
+        <div className="text-center mb-12">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-50 border border-indigo-100 text-indigo-700 text-xs font-mono font-semibold mb-4 animate-fade-in shadow-2xs">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
+            <span>AI-POWERED COGNITIVE WORKSPACE</span>
+          </div>
+          <h1 className="font-sans font-extrabold text-slate-900 text-5xl md:text-6xl tracking-tight leading-none mb-4">
+            AI Data <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-indigo-800 bg-clip-text text-transparent">Analyst Agent</span>
+          </h1>
+          <p className="text-base text-slate-500 max-w-2xl mx-auto font-sans font-normal leading-relaxed">
+            Drop in your CSV spreadsheets to run multi-dimensional calculations, auto-generate relational visual recommendations, and query raw files instantly.
+          </p>
         </div>
-        <h1 className="font-sans font-medium text-gray-950 text-4xl tracking-tight leading-none mb-3">
-          AI Data Analyst Agent
-        </h1>
-        <p className="text-sm text-gray-500 max-w-lg mx-auto">
-          Upload any CSV spreadsheet file to extract automated insights, run multi-aspect calculations, and generate fully interactive visual reports instantly.
-        </p>
-      </div>
 
-      <div className="space-y-8">
-        {/* Upload Container */}
-        <div
-          id="csv-drag-area"
-          onDragOver={handleDragOver}
-          onDragLeave={handleDragLeave}
-          onDrop={handleDrop}
-          onClick={() => fileInputRef.current?.click()}
-          className={`relative border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-all duration-200 group ${
-            isDragging
-              ? 'border-blue-500 bg-blue-50/20 shadow-xs'
-              : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50/40'
-          }`}
-        >
-          <input
-            type="file"
-            ref={fileInputRef}
-            onChange={handleFileChange}
-            accept=".csv"
-            className="hidden"
-          />
+        <div className="grid grid-cols-1 gap-8">
+          {/* Main Upload Box */}
+          <div
+            id="csv-drag-area"
+            onDragOver={handleDragOver}
+            onDragLeave={handleDragLeave}
+            onDrop={handleDrop}
+            onClick={() => fileInputRef.current?.click()}
+            className={`relative rounded-3xl p-12 text-center cursor-pointer transition-all duration-300 group shadow-md border ${
+              isDragging
+                ? 'border-indigo-500 bg-indigo-50/30 ring-4 ring-indigo-500/10'
+                : 'border-slate-200 bg-white/80 hover:bg-white hover:border-slate-300 hover:shadow-lg'
+            }`}
+          >
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handleFileChange}
+              accept=".csv"
+              className="hidden"
+            />
 
-          {loading ? (
-            <div className="flex flex-col items-center py-6">
-              <Loader2 className="w-10 h-10 animate-spin text-blue-600 mb-3" />
-              <p className="text-sm font-medium text-gray-800">Processing spreadsheet records...</p>
-              <p className="text-xs text-gray-400 mt-1">Estimating ranges and verifying cell metadata</p>
-            </div>
-          ) : (
-            <div className="flex flex-col items-center py-4">
-              <div className="p-4 bg-gray-50 text-gray-400 rounded-full group-hover:bg-blue-50 group-hover:text-blue-500 transition-colors duration-200 mb-4">
-                <FileUp className="w-8 h-8" />
+            {loading ? (
+              <div className="flex flex-col items-center py-8">
+                <div className="relative mb-6">
+                  <div className="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center">
+                    <Loader2 className="w-8 h-8 animate-spin text-indigo-600" />
+                  </div>
+                </div>
+                <h3 className="text-lg font-sans font-semibold text-slate-800 mb-1">Scanning spreadsheet contents...</h3>
+                <p className="text-sm text-slate-400 max-w-xs">Reading tabular schemas, mapping column characteristics, and building local stats matrices.</p>
               </div>
-              <p className="text-sm font-medium text-gray-800 mb-1">
-                Drag & drop your CSV file here, or <span className="text-blue-600">click to browse</span>
-              </p>
-              <p className="text-xs text-gray-400">
-                Supports standard comma-separated tabular files (up to 10MB)
-              </p>
+            ) : (
+              <div className="flex flex-col items-center py-6">
+                <div className="p-5 bg-slate-50 text-slate-400 rounded-2xl group-hover:bg-indigo-50 group-hover:text-indigo-600 transition-all duration-300 mb-6 group-hover:scale-105 shadow-2xs border border-slate-100/50">
+                  <FileUp className="w-10 h-10" />
+                </div>
+                <h3 className="text-xl font-sans font-semibold text-slate-800 mb-2">
+                  Import your data source
+                </h3>
+                <p className="text-sm text-slate-500 mb-1 font-sans">
+                  Drag & drop your <strong className="text-slate-700 font-semibold">.csv file</strong> here, or <span className="text-indigo-600 font-medium">browse local files</span>
+                </p>
+                <p className="text-xs text-slate-400 font-mono mt-2">
+                  UTF-8 comma-delimited • Max 10MB
+                </p>
+              </div>
+            )}
+          </div>
+
+          {errorMsg && (
+            <div id="upload-error" className="bg-rose-50 text-rose-600 px-5 py-4 rounded-2xl text-xs font-mono font-medium border border-rose-100 flex items-center gap-3 shadow-2xs">
+              <span className="w-2 h-2 rounded-full bg-rose-500 shrink-0" />
+              <span>{errorMsg}</span>
             </div>
           )}
-        </div>
 
-        {errorMsg && (
-          <div id="upload-error" className="bg-red-50 text-red-600 px-4 py-3 rounded-xl text-xs font-mono font-medium border border-red-100">
-            {errorMsg}
-          </div>
-        )}
+          {/* Curated Interactive Samples */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2 px-1">
+              <Database className="w-4 h-4 text-slate-400" />
+              <h2 className="text-xs font-mono uppercase tracking-wider text-slate-400 font-bold">
+                Or jumpstart with built-in sandbox datasets
+              </h2>
+            </div>
 
-        {/* Curator Samples */}
-        <div className="border border-gray-150/50 bg-gray-50/20 rounded-2xl p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Database className="w-4 h-4 text-gray-400" />
-            <h2 className="text-xs font-mono uppercase tracking-wider text-gray-500 font-semibold">
-              Or run instant analysis with smart curated samples
-            </h2>
-          </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              {SAMPLE_DATASETS.map((sample) => {
+                // Infer a visual tag based on dataset ID
+                let icon = <TableProperties className="w-5 h-5 text-indigo-500" />;
+                let badgeColor = "bg-indigo-50 text-indigo-700 border-indigo-100";
+                if (sample.id === 'sales-perf') {
+                  icon = <BarChart3 className="w-5 h-5 text-emerald-500" />;
+                  badgeColor = "bg-emerald-50 text-emerald-700 border-emerald-100";
+                } else if (sample.id === 'saas-metrics') {
+                  icon = <Binary className="w-5 h-5 text-sky-500" />;
+                  badgeColor = "bg-sky-50 text-sky-700 border-sky-100";
+                }
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {SAMPLE_DATASETS.map((sample) => (
-              <button
-                key={sample.id}
-                onClick={() => handleSelectSample(sample)}
-                className="flex flex-col text-left p-4 bg-white hover:bg-gray-50 border border-gray-100 hover:border-gray-200 hover:shadow-xs rounded-xl transition duration-150 group"
-              >
-                <h3 className="text-sm font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
-                  {sample.name}
-                </h3>
-                <p className="text-xs text-gray-400 mt-2 flex-1 line-clamp-3">
-                  {sample.description}
-                </p>
-                <div className="mt-4 flex items-center text-xs font-mono font-semibold text-blue-600 gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <span>Load dataset</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </div>
-              </button>
-            ))}
+                return (
+                  <button
+                    key={sample.id}
+                    onClick={() => handleSelectSample(sample)}
+                    className="flex flex-col text-left p-5 bg-white border border-slate-100 hover:border-slate-200 shadow-2xs hover:shadow-md rounded-2xl transition-all duration-200 group relative overflow-hidden cursor-pointer"
+                  >
+                    <div className="flex items-center justify-between mb-4 w-full">
+                      <div className="p-2.5 bg-slate-50 rounded-xl group-hover:bg-white transition-colors duration-200 border border-slate-100">
+                        {icon}
+                      </div>
+                      <span className={`text-[10px] font-mono font-semibold px-2.5 py-1 rounded-full border ${badgeColor}`}>
+                        SANDBOX
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-sm font-bold text-slate-800 group-hover:text-indigo-600 transition-colors mb-1.5 font-sans leading-snug">
+                      {sample.name}
+                    </h3>
+                    <p className="text-xs text-slate-400 leading-relaxed flex-1 line-clamp-3 mb-4">
+                      {sample.description}
+                    </p>
+
+                    <div className="flex items-center text-xs font-semibold text-indigo-600 gap-1.5 mt-auto pt-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <span>Launch workspace</span>
+                      <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
           </div>
         </div>
       </div>

@@ -50,6 +50,7 @@ export interface ChatMessage {
   text: string;
   timestamp: string;
   chart?: VisualRecommendation; // If the assistant generated a chart
+  chartData?: Record<string, any>[]; // Specific SQL query result rows
   suggestedQuestions?: string[];
 }
 
@@ -58,6 +59,7 @@ export interface PinnedItem {
   id: string;
   type: 'chart' | 'stat';
   chartConfig?: VisualRecommendation;
+  chartData?: Record<string, any>[]; // Keep query result records preserved
   statConfig?: {
     type: 'regression' | 'forecast' | 'anomaly';
     title: string;

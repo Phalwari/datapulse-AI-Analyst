@@ -34,12 +34,12 @@ interface InteractiveChartProps {
 }
 
 const PALETTE = [
-  '#2563eb', // blue-600
-  '#059669', // emerald-600
-  '#d97706', // amber-600
-  '#dc2626', // rose-600
+  '#4f46e5', // indigo-600
+  '#0d9488', // teal-600
+  '#ca8a04', // yellow-600
+  '#db2777', // pink-600
   '#7c3aed', // violet-600
-  '#0891b2', // cyan-600
+  '#0284c7', // sky-600
   '#ea580c', // orange-600
 ];
 
@@ -174,20 +174,21 @@ export const InteractiveChart: React.FC<InteractiveChartProps> = ({
 
       case 'line':
         return (
-          <LineChart data={chartData} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#f3f4f6" />
-            <XAxis dataKey={xAxisKey} tick={{ fill: '#6b7280', fontSize: 11 }} />
-            <YAxis tickFormatter={formatYAxis} tick={{ fill: '#6b7280', fontSize: 11 }} />
-            <Tooltip contentStyle={{ fontSize: '12px', borderRadius: '6px' }} />
-            <Legend wrapperStyle={{ fontSize: '11px' }} />
+          <LineChart data={chartData} margin={{ top: 15, right: 10, left: 0, bottom: 5 }}>
+            <CartesianGrid stroke="#f1f5f9" vertical={false} />
+            <XAxis dataKey={xAxisKey} tick={{ fill: '#64748b', fontSize: 11 }} />
+            <YAxis tickFormatter={formatYAxis} tick={{ fill: '#64748b', fontSize: 11 }} />
+            <Tooltip contentStyle={{ fontSize: '12px', borderRadius: '8px', border: '1px solid #e2e8f0', boxShadow: '0 4px 12px -2px rgba(0,0,0,0.05)' }} />
+            <Legend wrapperStyle={{ fontSize: '11px', paddingTop: '10px' }} />
             {yAxisKeys.map((yKey, idx) => (
               <Line
                 key={yKey}
                 type="monotone"
                 dataKey={yKey}
                 stroke={PALETTE[idx % PALETTE.length]}
-                strokeWidth={2.5}
-                activeDot={{ r: 6 }}
+                strokeWidth={3}
+                dot={{ stroke: PALETTE[idx % PALETTE.length], strokeWidth: 2, r: 4, fill: '#ffffff' }}
+                activeDot={{ r: 6, strokeWidth: 0 }}
               />
             ))}
           </LineChart>
@@ -260,6 +261,7 @@ export const InteractiveChart: React.FC<InteractiveChartProps> = ({
               <Scatter
                 key={yKey}
                 name={yKey}
+                dataKey={yKey}
                 data={chartData}
                 fill={PALETTE[idx % PALETTE.length]}
               />
@@ -294,48 +296,48 @@ export const InteractiveChart: React.FC<InteractiveChartProps> = ({
   };
 
   return (
-    <div id={`chart-card-${recommendation.id}`} className="bg-white border border-gray-150 rounded-xl p-5 shadow-xs flex flex-col h-full hover:border-gray-300 transition duration-150">
+    <div id={`chart-card-${recommendation.id}`} className="bg-white border border-slate-100 hover:border-slate-200/80 rounded-2xl p-6 shadow-[0_2px_8px_-3px_rgba(0,0,0,0.05),0_10px_20px_-10px_rgba(0,0,0,0.03)] flex flex-col min-h-[380px] transition-all duration-250 hover:shadow-md hover:scale-[1.005]">
       <div className="mb-4">
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h3 className="font-sans font-semibold text-gray-950 text-sm tracking-tight leading-tight">{title}</h3>
-            <p className="text-xs text-gray-400 mt-1">{description}</p>
+            <h3 className="font-sans font-bold text-slate-900 text-sm tracking-tight leading-snug">{title}</h3>
+            <p className="text-[11px] text-slate-400 mt-1 font-sans leading-relaxed">{description}</p>
           </div>
           
           <div className="flex items-center gap-1.5 flex-shrink-0">
             {onPin && (
               <button
                 onClick={() => onPin(recommendation)}
-                className={`p-1.5 rounded-lg border transition duration-150 cursor-pointer ${
+                className={`p-1.5 rounded-xl border transition-all duration-150 cursor-pointer ${
                   isPinned
-                    ? 'bg-amber-50 border-amber-200 text-amber-600 hover:bg-amber-100'
-                    : 'bg-gray-50 border-gray-150 text-gray-400 hover:text-gray-600 hover:bg-gray-100'
+                    ? 'bg-amber-500 border-amber-500 text-white shadow-xs hover:bg-amber-600'
+                    : 'bg-slate-50 border-slate-200/60 text-slate-400 hover:text-slate-700 hover:bg-slate-100'
                 }`}
                 title={isPinned ? "Pinned to Dashboard" : "Pin to Dashboard"}
               >
-                <Pin className="w-3.5 h-3.5 fill-current" />
+                <Pin className="w-3.5 h-3.5" />
               </button>
             )}
 
-            <span className="text-[9px] font-mono uppercase bg-blue-50 text-blue-600 px-2 py-0.5 rounded-full font-bold">
+            <span className="text-[9px] font-mono uppercase bg-indigo-50 text-indigo-600 px-2.5 py-1 rounded-lg font-extrabold border border-indigo-100/50">
               {aggregation !== 'sum' ? `${aggregation} of ` : ''}{type}
             </span>
           </div>
         </div>
       </div>
 
-      <div className="flex-1 w-full min-h-[220px] h-[220px]">
-        <ResponsiveContainer width="100%" height="100%">
+      <div className="flex-1 w-full min-h-[220px] h-[220px] py-1 relative">
+        <ResponsiveContainer width="100%" height={220} minWidth={0}>
           {renderChart()}
         </ResponsiveContainer>
       </div>
 
       {summary && (
-        <div className="mt-3 pt-3 border-t border-gray-100 bg-gray-50/50 p-2.5 rounded-lg text-xs font-sans text-gray-600 flex items-start gap-2">
-          <span className="font-mono text-[9px] font-bold text-emerald-600 mt-0.5 whitespace-nowrap bg-emerald-50 px-1.5 py-0.5 rounded">
-            TAKEAWAY
+        <div className="mt-4 pt-4 border-t border-slate-100 bg-slate-50/45 p-3 rounded-xl text-xs font-sans text-slate-600 flex items-start gap-2.5">
+          <span className="font-mono text-[9px] font-bold text-teal-700 mt-0.5 shrink-0 whitespace-nowrap bg-teal-50 border border-teal-100/60 px-2 py-0.5 rounded-md uppercase">
+            Insight
           </span>
-          <span className="leading-relaxed">{summary}</span>
+          <span className="leading-relaxed font-sans font-medium text-slate-500">{summary}</span>
         </div>
       )}
     </div>

@@ -9,7 +9,7 @@ from semantic_store import SemanticStore
 # Helper to call Groq API
 def call_groq(prompt: str, system_instruction: str = "", json_mode: bool = False) -> str:
     key = os.getenv("GROQ_API_KEY")
-    model = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
+    model = os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
     if not key:
         raise ValueError("GROQ_API_KEY environment variable is not set.")
         

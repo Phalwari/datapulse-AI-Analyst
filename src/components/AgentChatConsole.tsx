@@ -1,13 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dataset, ChatMessage, VisualRecommendation } from '../types';
 import { InteractiveChart } from './InteractiveChart';
-import { Send, Sparkles, Loader2, User, Bot, Trash2, ArrowUpCircle } from 'lucide-react';
+import { Send, Sparkles, Loader2, User, Bot, Trash2, ArrowUpRight } from 'lucide-react';
 
 interface AgentChatConsoleProps {
   dataset: Dataset;
   messages: ChatMessage[];
   setMessages: React.Dispatch<React.SetStateAction<ChatMessage[]>>;
-  onPinChart: (rec: VisualRecommendation) => void;
+  onPinChart: (rec: VisualRecommendation, chartData?: Record<string, any>[]) => void;
   pinnedIds: string[];
 }
 
@@ -75,10 +75,11 @@ export const AgentChatConsole: React.FC<AgentChatConsoleProps> = ({
         text: responseData.answer,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         chart: responseData.chart || undefined,
+        chartData: responseData.chartData || undefined,
         suggestedQuestions: responseData.suggestedQuestions || []
       };
 
-      setMessages(prev => [...prev, modelMessage]);
+      setMessages(prev => [...prev.filter(m => m.id !== 'usr_cat_provisional'), modelMessage]);
     } catch (error: any) {
       console.error(error);
       const errorMessage: ChatMessage = {
@@ -123,7 +124,7 @@ What would you like me to calculate or plot? You can ask me to write a correlati
         return (
           <li
             key={idx}
-            className="ml-4 list-disc text-sm leading-relaxed mb-1"
+            className="ml-5 list-disc text-slate-600 text-sm leading-relaxed mb-1.5 font-sans font-medium"
             dangerouslySetInnerHTML={{ __html: formattedLine.substring(2) }}
           />
         );
@@ -135,7 +136,7 @@ What would you like me to calculate or plot? You can ask me to write a correlati
       return (
         <p
           key={idx}
-          className="text-sm leading-relaxed mb-2"
+          className="text-sm text-slate-600 leading-relaxed mb-2 font-sans font-medium"
           dangerouslySetInnerHTML={{ __html: formattedLine }}
         />
       );
@@ -143,20 +144,26 @@ What would you like me to calculate or plot? You can ask me to write a correlati
   };
 
   return (
-    <div className="flex flex-col h-[580px] bg-white border border-gray-100 rounded-2xl overflow-hidden shadow-xs">
+    <div className="flex flex-col h-[640px] bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-[0_4px_20px_-4px_rgba(0,0,0,0.05),0_10px_30px_-10px_rgba(0,0,0,0.03)]">
+      
       {/* Console Header */}
-      <div className="bg-gray-50/50 border-b border-gray-100 px-5 py-4.5 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-4 h-4 text-blue-600" />
-          <h3 className="font-sans font-medium text-gray-900 text-sm tracking-tight">AI Co-Analyst Agent</h3>
-          <span className="text-[10px] bg-emerald-50 text-emerald-600 px-2 py-0.5 rounded-full font-mono font-bold animate-pulse">
-            Ready
+      <div className="bg-slate-50 border-b border-slate-100 px-6 py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2.5">
+          <div className="p-1.5 bg-indigo-50 text-indigo-600 rounded-lg">
+            <Sparkles className="w-4 h-4" />
+          </div>
+          <div>
+            <h3 className="font-sans font-bold text-slate-800 text-sm tracking-tight leading-none">AI Data Analyst</h3>
+            <span className="text-[10px] text-slate-400 font-mono mt-1 block">Active Workspace Thread</span>
+          </div>
+          <span className="ml-2 text-[9px] bg-emerald-50 text-emerald-700 border border-emerald-100 px-2.5 py-0.5 rounded-full font-mono font-bold">
+            online
           </span>
         </div>
         
         <button
           onClick={handleClearHistory}
-          className="text-gray-400 hover:text-rose-600 transition p-1.5 hover:bg-gray-100 rounded-lg cursor-pointer"
+          className="text-slate-400 hover:text-rose-600 transition p-2 hover:bg-slate-100 rounded-xl cursor-pointer border border-transparent hover:border-slate-200"
           title="Reset chat workflow log"
         >
           <Trash2 className="w-4 h-4" />
@@ -164,91 +171,102 @@ What would you like me to calculate or plot? You can ask me to write a correlati
       </div>
 
       {/* Message list workspace */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-5 bg-gray-50/40">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}
-          >
-            {/* Sender header */}
-            <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-mono text-gray-400 font-semibold uppercase">
-              {msg.role === 'user' ? (
-                <>
-                  <span>You</span>
-                  <User className="w-3 h-3" />
-                </>
-              ) : (
-                <>
-                  <Bot className="w-3.5 h-3.5 text-blue-600" />
-                  <span>Agent Analyst</span>
-                </>
-              )}
-            </div>
+      <div className="flex-1 overflow-y-auto p-6 space-y-6 bg-slate-50/30">
+        {messages.map((msg) => {
+          const isUser = msg.role === 'user';
+          const isSystem = msg.role === 'system';
 
-            {/* Bubble body */}
+          return (
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-3 shadow-2xs ${
-                msg.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-tr-xs'
-                  : msg.role === 'system'
-                  ? 'bg-amber-50 text-amber-900 border border-amber-100 rounded-tl-xs'
-                  : 'bg-white border border-gray-100 text-gray-800 rounded-tl-xs'
-              }`}
+              key={msg.id}
+              className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} max-w-full`}
             >
-              {msg.role === 'user' ? (
-                <p className="text-sm leading-normal whitespace-pre-wrap">{msg.text}</p>
-              ) : (
-                <div className="space-y-1">{formatText(msg.text)}</div>
-              )}
+              {/* Sender Tag Header */}
+              <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">
+                {isUser ? (
+                  <>
+                    <span>You</span>
+                    <div className="p-0.5 bg-slate-100 rounded-full text-slate-500">
+                      <User className="w-2.5 h-2.5" />
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-0.5 bg-indigo-50 rounded-full text-indigo-600">
+                      <Bot className="w-2.5 h-2.5" />
+                    </div>
+                    <span>AI Copilot</span>
+                  </>
+                )}
+              </div>
 
-              {/* Timestamp footer code */}
+              {/* Message Bubble */}
               <div
-                className={`text-[9px] mt-2 font-mono text-right ${
-                  msg.role === 'user' ? 'text-blue-200' : 'text-gray-400'
+                className={`max-w-[85%] rounded-2xl px-5 py-3.5 shadow-2xs ${
+                  isUser
+                    ? 'bg-gradient-to-br from-indigo-600 to-indigo-700 text-white rounded-tr-xs'
+                    : isSystem
+                    ? 'bg-rose-50 text-rose-900 border border-rose-100 rounded-tl-xs'
+                    : 'bg-white border border-slate-100 text-slate-800 rounded-tl-xs shadow-[0_2px_8px_-3px_rgba(0,0,0,0.04)]'
                 }`}
               >
-                {msg.timestamp}
+                {isUser ? (
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap font-sans font-medium">{msg.text}</p>
+                ) : (
+                  <div className="space-y-1">{formatText(msg.text)}</div>
+                )}
+
+                {/* Bubble Timestamp */}
+                <div
+                  className={`text-[9px] mt-2.5 font-mono text-right font-medium ${
+                    isUser ? 'text-indigo-200' : 'text-slate-400'
+                  }`}
+                >
+                  {msg.timestamp}
+                </div>
               </div>
+
+              {/* Inline Dynamic Charts */}
+              {msg.chart && (
+                <div className="w-full sm:max-w-xl mt-4 animate-fade-in pl-2">
+                  <InteractiveChart
+                    recommendation={msg.chart}
+                    rows={msg.chartData || dataset.rows}
+                    onPin={(rec) => onPinChart(rec, msg.chartData)}
+                    isPinned={pinnedIds.includes(msg.chart.id)}
+                  />
+                </div>
+              )}
+
+              {/* Suggestions Chips */}
+              {msg.suggestedQuestions && msg.suggestedQuestions.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-4 pl-2 max-w-[90%]">
+                  {msg.suggestedQuestions.map((q, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => handleSendMessage(q)}
+                      className="text-xs font-sans font-semibold text-indigo-600 hover:text-indigo-800 bg-white hover:bg-indigo-50 border border-slate-100 hover:border-indigo-200 px-3.5 py-1.5 rounded-xl transition duration-150 shadow-2xs hover:shadow-xs hover:scale-[1.01] cursor-pointer flex items-center gap-1"
+                    >
+                      <span>{q}</span>
+                      <ArrowUpRight className="w-3.5 h-3.5 text-indigo-400" />
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+          );
+        })}
 
-            {/* Inline dynamic Recharts recommendations */}
-            {msg.chart && (
-              <div className="w-full sm:max-w-xl mt-3 animate-fade-in pl-5">
-                <InteractiveChart
-                  recommendation={msg.chart}
-                  rows={dataset.rows}
-                  onPin={onPinChart}
-                  isPinned={pinnedIds.includes(msg.chart.id)}
-                />
-              </div>
-            )}
-
-            {/* Dynamic dynamic suggestion catalysts */}
-            {msg.suggestedQuestions && msg.suggestedQuestions.length > 0 && (
-              <div className="flex flex-wrap gap-1.5 mt-3 pl-5 max-w-[90%]">
-                {msg.suggestedQuestions.map((q, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSendMessage(q)}
-                    className="text-[11px] font-sans font-medium text-blue-600 hover:text-blue-800 bg-blue-50/40 hover:bg-blue-50 border border-blue-100/40 hover:border-blue-200 px-3 py-1.5 rounded-full transition cursor-pointer"
-                  >
-                    {q}
-                  </button>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
-
+        {/* Loading placeholder */}
         {loading && (
           <div className="flex flex-col items-start">
-            <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-mono text-gray-400 uppercase">
-              <Bot className="w-3.5 h-3.5 text-blue-600 animate-spin" />
-              <span>Analyzing spreadsheet patterns...</span>
+            <div className="flex items-center gap-1.5 mb-1.5 text-[10px] font-mono text-slate-400 font-bold uppercase tracking-wider">
+              <Bot className="w-3.5 h-3.5 text-indigo-600 animate-pulse" />
+              <span>Analyzing models...</span>
             </div>
-            <div className="bg-white border border-gray-100 rounded-2xl rounded-tl-xs px-4 py-3 shadow-2xs flex items-center gap-2">
-              <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-              <span className="text-xs text-gray-500 font-sans">Synthesizing visual queries...</span>
+            <div className="bg-white border border-slate-100 rounded-2xl rounded-tl-xs px-5 py-4 shadow-2xs flex items-center gap-3">
+              <Loader2 className="w-4 h-4 animate-spin text-indigo-600" />
+              <span className="text-xs text-slate-500 font-sans font-medium">Crunching tables and crafting dynamic charts...</span>
             </div>
           </div>
         )}
@@ -256,27 +274,27 @@ What would you like me to calculate or plot? You can ask me to write a correlati
         <div ref={scrollRef} />
       </div>
 
-      {/* Input controls block */}
-      <div className="p-4 border-t border-gray-100 bg-white">
+      {/* Input Action Form Container */}
+      <div className="p-4 border-t border-slate-100 bg-white">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             handleSendMessage(inputValue);
           }}
-          className="flex items-center gap-2.5"
+          className="flex items-center gap-3"
         >
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
             placeholder="Ask me to aggregate metrics, describe correlations, plot segments..."
-            className="flex-1 px-4 py-3 border border-gray-100 focus:border-blue-500 focus:ring-1 focus:ring-blue-100/50 text-sm rounded-xl outline-none bg-gray-50/70"
+            className="flex-1 px-5 py-3.5 border border-slate-100 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/5 text-sm rounded-2xl outline-none bg-slate-50/50 transition-all placeholder:text-slate-400 font-sans font-medium text-slate-800"
             disabled={loading}
           />
           <button
             type="submit"
             disabled={!inputValue.trim() || loading}
-            className="p-3 bg-blue-600 hover:bg-blue-700 text-white rounded-xl transition duration-150 disabled:opacity-45 flex items-center justify-center cursor-pointer"
+            className="p-3.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-200 text-white rounded-2xl transition duration-150 disabled:opacity-45 flex items-center justify-center cursor-pointer shadow-md shadow-indigo-600/10 disabled:shadow-none"
           >
             <Send className="w-4 h-4" />
           </button>

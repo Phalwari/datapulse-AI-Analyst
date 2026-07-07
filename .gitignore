@@ -7,8 +7,17 @@ coverage/
 .env*
 !.env.example
 
-# Local temp data & databases
+# Python Cache & Virtual Environments
+__pycache__/
+agents/__pycache__/
+*.pyc
+.venv/
+venv/
+env/
+
+# Databases and Datasets
 chroma_db/
 data_files/
-__pycache__/
-**/__pycache__/
+*.db
+*.csv
+*.xlsx
