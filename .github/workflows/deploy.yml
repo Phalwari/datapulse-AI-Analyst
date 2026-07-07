@@ -14,10 +14,22 @@ jobs:
           fetch-depth: 0
           lfs: true
 
-      - name: Push to Hugging Face
+      - name: Push to Hugging Face (Clean History)
         env:
           HF_TOKEN: ${{ secrets.HF_TOKEN }}
         run: |
+          # Remove original git history to prevent pushing large binary files in past commits
+          rm -rf .git
+          
+          # Initialize a clean, fresh repository
+          git init
           git config --global user.email "github-actions-bot@users.noreply.github.com"
           git config --global user.name "GitHub Actions Bot"
+          git checkout -b main
+          
+          # Add current files (which respects .gitignore and excludes chroma_db/data_files)
+          git add .
+          git commit -m "Deploy to Hugging Face"
+          
+          # Force push the clean single commit to Hugging Face Spaces
           git push --force https://phalwari:$HF_TOKEN@huggingface.co/spaces/phalwari/datapulse main
