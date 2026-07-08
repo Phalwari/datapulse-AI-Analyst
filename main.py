@@ -203,6 +203,7 @@ async def chat_interaction(req: ChatRequest):
         }
         if result.get("chart"):
             response_body["chart"] = result["chart"]
+            response_body["chartData"] = result.get("query_results", [])
 
         return response_body
 

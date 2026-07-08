@@ -55,6 +55,12 @@ export const InteractiveChart: React.FC<InteractiveChartProps> = ({
   const chartData = useMemo(() => {
     if (!rows || rows.length === 0) return [];
 
+    // Ensure the key exists in data to avoid rendering empty/broken charts with "Unknown" or NaNs
+    const firstRow = rows[0];
+    if (!(xAxisKey in firstRow) || !yAxisKeys.every(yKey => yKey in firstRow)) {
+      return [];
+    }
+
     const groupedMap = new Map<string, Record<string, { sum: number; count: number; min: number; max: number }>>();
     
     rows.forEach(row => {

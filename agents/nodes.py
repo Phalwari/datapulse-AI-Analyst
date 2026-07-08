@@ -164,10 +164,17 @@ def visualization_node(state: AgentState) -> Dict[str, Any]:
         
     column_keys = list(state.query_results[0].keys())
     
-    system_prompt = """You are a visualization expert.
+    system_prompt = f"""You are a visualization expert.
 Determine if a visual chart is relevant for the user query and results keys.
+
+CRITICAL RULES:
+1. You MUST choose `xAxisKey` and `yAxisKeys` ONLY from the available Resulting Keys: {column_keys}.
+2. Do NOT invent or use keys like "metric", "value", or any other key not explicitly in the Resulting Keys list.
+3. If the query results only contain a single row with multiple separate metrics (e.g. summary stats of different columns), a chart is typically NOT relevant. Return an empty JSON object {{}} in this case.
+4. If no chart is relevant or if the required keys are not present in the Resulting Keys, return an empty JSON object: {{}}
+
 You MUST respond with a JSON object conforming exactly to this schema:
-{
+{{
   "type": "bar" | "line" | "area" | "scatter" | "pie" | "radar",
   "title": "Visual chart descriptive title",
   "xAxisKey": "column_name",
@@ -175,8 +182,7 @@ You MUST respond with a JSON object conforming exactly to this schema:
   "aggregation": "sum" | "mean" | "count" | "min" | "max",
   "description": "Explanation of what this chart demonstrates",
   "summary": "Main takeaway message of this visual"
-}
-If no chart is relevant, return an empty JSON object: {}"""
+}}"""
 
     prompt = f"""User Query: "{state.query}"
 Resulting Keys: {column_keys}
@@ -187,6 +193,15 @@ Sample Data: {json.dumps(state.query_results[0], default=str)}"""
         chart_data = json.loads(response_text)
         if not chart_data or "type" not in chart_data:
             return {}
+            
+        # Post-validation check: Ensure xAxisKey and all yAxisKeys exist in column_keys
+        rec_x = chart_data.get("xAxisKey")
+        rec_y = chart_data.get("yAxisKeys", [])
+        
+        if rec_x not in column_keys or not all(y in column_keys for y in rec_y):
+            print(f"[Visualization Agent] Discarding chart because recommended keys ({rec_x}, {rec_y}) are not in column keys: {column_keys}")
+            return {}
+            
         chart_data["id"] = f"chart_{int(os.getpid())}"
         print(f"Recommended Chart: {chart_data}")
         return {"chart": chart_data}
