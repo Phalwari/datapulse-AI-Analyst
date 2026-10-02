@@ -33,3 +33,4 @@ jobs:
           
           # Force push the clean single commit to Hugging Face Spaces
           git push --force https://phalwari:$HF_TOKEN@huggingface.co/spaces/phalwari/datapulse main
+

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { PinnedItem, Dataset, VisualRecommendation } from '../types';
 import { InteractiveChart } from './InteractiveChart';
-import { LayoutDashboard, RefreshCw, Trash2, ArrowUp, ArrowDown, ClipboardList, TrendingUp, AlertTriangle, Calendar, Layers, Sparkles } from 'lucide-react';
+import { exportElementToPDF, exportDatasetToExcel } from '../utils/exportReport';
+import { LayoutDashboard, RefreshCw, Trash2, ArrowUp, ArrowDown, ClipboardList, TrendingUp, AlertTriangle, Calendar, Layers, Sparkles, Download, FileSpreadsheet } from 'lucide-react';
 
 interface CustomDashboardProps {
   dataset: Dataset;
@@ -53,7 +54,7 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
   };
 
   return (
-    <div className="space-y-6">
+    <div id="custom-dashboard-container" className="space-y-6">
       {/* Dashboard Top Header Action Panel */}
       <div className="bg-white border border-slate-100 rounded-3xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
         <div>
@@ -70,27 +71,46 @@ export const CustomDashboard: React.FC<CustomDashboardProps> = ({
           </p>
         </div>
 
-        {pinnedItems.length > 0 && (
-          <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0">
-            <button
-              onClick={handleRefresh}
-              disabled={isRefreshing}
-              className="flex-1 sm:flex-none py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-100 hover:border-slate-200 rounded-xl text-xs font-sans font-semibold text-slate-600 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition shadow-2xs"
-            >
-              <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${isRefreshing ? 'animate-spin' : ''}`} />
-              <span>Refresh Widgets</span>
-            </button>
+        <div className="flex items-center gap-2.5 w-full sm:w-auto shrink-0 flex-wrap">
+          <button
+            onClick={() => exportElementToPDF('custom-dashboard-container', `${dataset.name}_dashboard_report.pdf`)}
+            className="py-2.5 px-4 bg-indigo-50 hover:bg-indigo-100/70 border border-indigo-100 rounded-xl text-xs font-sans font-semibold text-indigo-700 flex items-center justify-center gap-2 cursor-pointer transition"
+          >
+            <Download className="w-3.5 h-3.5" />
+            <span>Export PDF</span>
+          </button>
 
-            <button
-              onClick={handleClearAll}
-              className="flex-1 sm:flex-none py-2.5 px-4 bg-rose-50 hover:bg-rose-100/70 border border-rose-100 text-xs font-sans font-semibold text-rose-700 flex items-center justify-center gap-2 cursor-pointer transition rounded-xl"
-            >
-              <Trash2 className="w-3.5 h-3.5" />
-              <span>Clear Dashboard</span>
-            </button>
-          </div>
-        )}
+          <button
+            onClick={() => exportDatasetToExcel(dataset)}
+            className="py-2.5 px-4 bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-100 rounded-xl text-xs font-sans font-semibold text-emerald-700 flex items-center justify-center gap-2 cursor-pointer transition"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Export Excel</span>
+          </button>
+
+          {pinnedItems.length > 0 && (
+            <>
+              <button
+                onClick={handleRefresh}
+                disabled={isRefreshing}
+                className="py-2.5 px-4 bg-white hover:bg-slate-50 border border-slate-100 hover:border-slate-200 rounded-xl text-xs font-sans font-semibold text-slate-600 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 transition shadow-2xs"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${isRefreshing ? 'animate-spin' : ''}`} />
+                <span>Refresh Widgets</span>
+              </button>
+
+              <button
+                onClick={handleClearAll}
+                className="py-2.5 px-4 bg-rose-50 hover:bg-rose-100/70 border border-rose-100 text-xs font-sans font-semibold text-rose-700 flex items-center justify-center gap-2 cursor-pointer transition rounded-xl"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+                <span>Clear</span>
+              </button>
+            </>
+          )}
+        </div>
       </div>
+
 
       {/* Action Notification Block */}
       {refreshNotice && (

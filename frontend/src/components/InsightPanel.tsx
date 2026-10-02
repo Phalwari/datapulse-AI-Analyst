@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { Dataset, AutoAnalysis, VisualRecommendation } from '../types';
 import { InteractiveChart } from './InteractiveChart';
-import { Sparkles, TrendingUp, AlertTriangle, HelpCircle, CheckCircle2, ChevronRight, Info, Loader2, Compass } from 'lucide-react';
+import { exportElementToPDF } from '../utils/exportReport';
+import { Sparkles, TrendingUp, AlertTriangle, HelpCircle, CheckCircle2, ChevronRight, Info, Loader2, Compass, Download } from 'lucide-react';
 
 interface InsightPanelProps {
   dataset: Dataset;
@@ -111,22 +112,33 @@ export const InsightPanel: React.FC<InsightPanelProps> = ({
   if (!analysis) return null;
 
   return (
-    <div className="space-y-8">
+    <div id="insight-panel-container" className="space-y-8">
       {/* Premium Gradient Summary Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950 text-slate-100 border border-slate-800 rounded-2xl p-8 shadow-lg relative overflow-hidden">
+      <div className="bg-gradient-to-r from-slate-900 via-slate-850 to-indigo-950 text-slate-100 border border-slate-800 rounded-2xl p-8 shadow-lg relative overflow-hidden flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
         <div className="absolute right-0 bottom-0 w-80 h-80 bg-gradient-to-tr from-indigo-500/10 via-sky-500/5 to-transparent rounded-full blur-3xl pointer-events-none" />
-        <div className="flex items-center gap-2 mb-4">
-          <div className="p-1.5 bg-indigo-500/15 rounded-lg border border-indigo-400/20">
-            <Sparkles className="w-4 h-4 text-indigo-400" />
+        <div className="relative z-10">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="p-1.5 bg-indigo-500/15 rounded-lg border border-indigo-400/20">
+              <Sparkles className="w-4 h-4 text-indigo-400" />
+            </div>
+            <h3 className="font-mono font-bold text-[10px] tracking-widest text-indigo-400 uppercase">
+              Dataset Analytical Narrative
+            </h3>
           </div>
-          <h3 className="font-mono font-bold text-[10px] tracking-widest text-indigo-400 uppercase">
-            Dataset Analytical Narrative
-          </h3>
+          <p className="font-sans text-sm md:text-base text-slate-200 leading-relaxed max-w-4xl font-medium">
+            {analysis.summary}
+          </p>
         </div>
-        <p className="font-sans text-sm md:text-base text-slate-200 leading-relaxed max-w-5xl font-medium">
-          {analysis.summary}
-        </p>
+
+        <button
+          onClick={() => exportElementToPDF('insight-panel-container', `${dataset.name}_insights_summary.pdf`)}
+          className="relative z-10 py-2.5 px-4 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-sans font-semibold flex items-center gap-2 shrink-0 cursor-pointer shadow-md shadow-indigo-600/20 transition"
+        >
+          <Download className="w-4 h-4" />
+          <span>Export Executive Report</span>
+        </button>
       </div>
+
 
       {/* Grid: Left Insights & Visuals, Right Catalyst Question Guide */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">

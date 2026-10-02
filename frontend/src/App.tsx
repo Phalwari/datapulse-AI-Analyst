@@ -158,8 +158,10 @@ What would you like me to calculate or plot? You can ask me to write a correlati
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         chart: responseData.chart || undefined,
         chartData: responseData.chartData || undefined,
-        suggestedQuestions: responseData.suggestedQuestions || []
+        suggestedQuestions: responseData.suggestedQuestions || [],
+        agentSteps: responseData.agentSteps || undefined
       };
+
 
       setChatLogs(prev => [...prev.filter(m => m.id !== 'usr_cat_provisional'), modelMessage]);
     } catch (err: any) {

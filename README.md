@@ -31,7 +31,7 @@ DataPulse AI Analyst is a premium, developer-centric data screening and conversa
 * **Backend**: FastAPI (Python 3.11), Uvicorn.
 * **Agentic Graph**: LangGraph (multi-agent state machine coordination).
 * **Database & Vector Store**: DuckDB (columnar local SQL execution), ChromaDB (semantic embedding vector database).
-* **AI Model**: Llama 3.1 8B (via Groq API) for fast, highly parallel JSON schemas and SQL query generation.
+* **AI Model**: Llama 3.1 8B (via Groq API) or OpenRouter for fast, highly parallel JSON schemas and SQL query generation.
 
 ---
 
@@ -76,15 +76,15 @@ Mathematical models (regressions, anomaly detection) run within a **Subprocess S
 * **Python** (v3.10+)
 
 ### 1. Backend Setup
-1. Navigate to the project root:
+1. Navigate to the backend directory:
    ```bash
-   cd datapulse-ai
+   cd backend
    ```
-2. Install Python packages:
+2. Install Python dependencies:
    ```bash
    pip install -r requirements.txt
    ```
-3. Set your environment variables in a `.env` file:
+3. Set your environment variables in a `.env` file inside `backend/` (or project root):
    ```env
    GROQ_API_KEY=your_groq_api_token
    GROQ_MODEL=llama-3.1-8b-instant
@@ -95,12 +95,29 @@ Mathematical models (regressions, anomaly detection) run within a **Subprocess S
    ```
 
 ### 2. Frontend Setup
-1. In a new terminal, install npm dependencies:
+1. In a new terminal, navigate to the frontend directory:
+   ```bash
+   cd frontend
+   ```
+2. Install npm dependencies:
    ```bash
    npm install
    ```
-2. Start the Vite React development server:
+3. Start the Vite React development server:
    ```bash
    npm run dev
    ```
-3. Access the dashboard at **`http://localhost:5173/`**.
+4. Access the dashboard at **`http://localhost:5173/`**. (The frontend automatically proxies `/api/*` requests to FastAPI on `http://localhost:8000`).
+
+---
+
+## 📖 Documentation & Guidelines
+
+All engineering documentation and task trackers are centralized in the [`docs/`](docs/) directory:
+
+* **[Agent Working Guide](docs/agent.md)**: Rules of engagement, development protocols, and verification gates for AI agents and developers.
+* **[Implementation Plan](docs/implementation_plan.md)**: Comprehensive architectural roadmap incorporating `ml-best-practices` and `building-data-apps`.
+* **[Task Backlog (TODO)](docs/todo.md)**: Active feature progress, priorities, and milestone checklist.
+* **[Changelog](docs/changelog.md)**: Historical release records and semantic versioning logs.
+
+

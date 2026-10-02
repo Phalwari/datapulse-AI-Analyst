@@ -1,16 +1,37 @@
 from langgraph.graph import StateGraph, END
 from typing import Dict, Any
-from agents.nodes import (
-    AgentState,
-    validation_node,
-    data_wrangling_node,
-    schema_discovery_node,
-    sql_execution_node,
-    visualization_node,
-    synthesis_node
-)
+try:
+    from backend.agents.nodes import (
+        AgentState,
+        validation_node,
+        data_wrangling_node,
+        schema_discovery_node,
+        sql_execution_node,
+        visualization_node,
+        synthesis_node,
+    )
+except ImportError:
+    from agents.nodes import (
+        AgentState,
+        validation_node,
+        data_wrangling_node,
+        schema_discovery_node,
+        sql_execution_node,
+        visualization_node,
+        synthesis_node,
+    )
 
-def run_agent_orchestrator(query: str, dataset_name: str, csv_path: str) -> Dict[str, Any]:
+
+
+def run_agent_orchestrator(
+    query: str, dataset_name: str = "", csv_path: str = "", datasets: list = None
+) -> Dict[str, Any]:
+    """
+    Build and execute the LangGraph agent state graph for a single user query.
+
+    Node execution order:
+        validate → wrangle → discover_schema → execute_sql (with retry loop) → visualize → synthesize
+    """
     # Initialize the graph
     workflow = StateGraph(AgentState)
 
@@ -35,8 +56,8 @@ def run_agent_orchestrator(query: str, dataset_name: str, csv_path: str) -> Dict
         post_validate_router,
         {
             "synthesize": "synthesize",
-            "wrangle": "wrangle"
-        }
+            "wrangle": "wrangle",
+        },
     )
 
     workflow.add_edge("wrangle", "discover_schema")
@@ -53,8 +74,8 @@ def run_agent_orchestrator(query: str, dataset_name: str, csv_path: str) -> Dict
         sql_router,
         {
             "execute_sql": "execute_sql",
-            "visualize": "visualize"
-        }
+            "visualize": "visualize",
+        },
     )
 
     workflow.add_edge("visualize", "synthesize")
@@ -63,11 +84,16 @@ def run_agent_orchestrator(query: str, dataset_name: str, csv_path: str) -> Dict
     # Compile the graph
     app = workflow.compile()
 
+    formatted_datasets = datasets or []
+    if not formatted_datasets and csv_path:
+        formatted_datasets = [{"name": dataset_name, "csv_path": csv_path}]
+
     # Create initial state
     initial_state = AgentState(
         query=query,
         dataset_name=dataset_name,
-        csv_path=csv_path
+        csv_path=csv_path,
+        datasets=formatted_datasets,
     )
 
     # Execute graph synchronously

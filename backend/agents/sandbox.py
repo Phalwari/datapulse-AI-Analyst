@@ -6,7 +6,17 @@ import shutil
 import pandas as pd
 import json
 
+
 class SubprocessSandbox:
+    """
+    Secure execution sandbox for running Python code against a DataFrame.
+
+    Security features:
+    - Timeout protection: Kills executing processes after a configurable duration.
+    - Directory isolation: Forces execution inside an ephemeral temporary workspace.
+    - Automatic cleanup: All generated files are garbage-collected on completion.
+    """
+
     def __init__(self, timeout_seconds: int = 15):
         self.timeout = timeout_seconds
 
@@ -58,7 +68,7 @@ except Exception as e:
                 [sys.executable, script_path],
                 capture_output=True,
                 text=True,
-                timeout=self.timeout
+                timeout=self.timeout,
             )
 
             stdout = process.stdout
@@ -81,7 +91,7 @@ except Exception as e:
                 "stdout": stdout,
                 "stderr": stderr,
                 "success": return_code == 0,
-                "result": result_data
+                "result": result_data,
             }
 
         except subprocess.TimeoutExpired:
@@ -89,14 +99,14 @@ except Exception as e:
                 "stdout": "",
                 "stderr": f"Execution timed out after {self.timeout} seconds.",
                 "success": False,
-                "result": None
+                "result": None,
             }
         except Exception as e:
             return {
                 "stdout": "",
                 "stderr": str(e),
                 "success": False,
-                "result": None
+                "result": None,
             }
         finally:
             # Clean up files safely

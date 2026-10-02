@@ -1,23 +1,29 @@
+# Dependencies & Builds
 node_modules/
-build/
 dist/
+build/
 coverage/
 .DS_Store
 *.log
+
+# Environment Files
 .env*
 !.env.example
 
 # Python Cache & Virtual Environments
 __pycache__/
-agents/__pycache__/
 *.pyc
 .venv/
 venv/
 env/
 
-# Databases and Datasets
+# Databases, Vector Store & Datasets
 chroma_db/
 data_files/
 *.db
 *.csv
 *.xlsx
+
+# Agent Task Metadata
+.agents/
+assets/.aistudio/

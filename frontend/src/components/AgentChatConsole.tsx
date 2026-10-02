@@ -1,7 +1,9 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Dataset, ChatMessage, VisualRecommendation } from '../types';
 import { InteractiveChart } from './InteractiveChart';
+import { AgentThoughtVisualizer } from './AgentThoughtVisualizer';
 import { Send, Sparkles, Loader2, User, Bot, Trash2, ArrowUpRight } from 'lucide-react';
+
 
 interface AgentChatConsoleProps {
   dataset: Dataset;
@@ -56,12 +58,13 @@ export const AgentChatConsole: React.FC<AgentChatConsoleProps> = ({
         body: JSON.stringify({
           messages: historyContext,
           columns: dataset.columns,
-          // Limit rows representation sent to AI for token compliance
           sampleRows: dataset.rows.slice(0, 15),
           rowCount: dataset.rowCount,
-          datasetName: dataset.name
+          datasetName: dataset.name,
+          activeDatasets: (dataset as any).activeDatasets || [{ name: dataset.name }]
         })
       });
+
 
       if (!response.ok) {
         throw new Error("Failed to consult the AI model analyst.");
@@ -76,8 +79,10 @@ export const AgentChatConsole: React.FC<AgentChatConsoleProps> = ({
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         chart: responseData.chart || undefined,
         chartData: responseData.chartData || undefined,
-        suggestedQuestions: responseData.suggestedQuestions || []
+        suggestedQuestions: responseData.suggestedQuestions || [],
+        agentSteps: responseData.agentSteps || undefined
       };
+
 
       setMessages(prev => [...prev.filter(m => m.id !== 'usr_cat_provisional'), modelMessage]);
     } catch (error: any) {
@@ -201,6 +206,7 @@ What would you like me to calculate or plot? You can ask me to write a correlati
               </div>
 
               {/* Message Bubble */}
+
               <div
                 className={`max-w-[85%] rounded-2xl px-5 py-3.5 shadow-2xs ${
                   isUser
@@ -225,6 +231,14 @@ What would you like me to calculate or plot? You can ask me to write a correlati
                   {msg.timestamp}
                 </div>
               </div>
+
+              {/* LangGraph Agent Thought Process Visualizer */}
+              {msg.agentSteps && msg.agentSteps.length > 0 && (
+                <div className="w-full sm:max-w-xl pl-2">
+                  <AgentThoughtVisualizer steps={msg.agentSteps} />
+                </div>
+              )}
+
 
               {/* Inline Dynamic Charts */}
               {msg.chart && (

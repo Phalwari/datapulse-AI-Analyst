@@ -52,7 +52,9 @@ export interface ChatMessage {
   chart?: VisualRecommendation; // If the assistant generated a chart
   chartData?: Record<string, any>[]; // Specific SQL query result rows
   suggestedQuestions?: string[];
+  agentSteps?: { node: string; title: string; detail: string; sql?: string; retry?: number }[];
 }
+
 
 // Dashboard and Stats Integration
 export interface PinnedItem {

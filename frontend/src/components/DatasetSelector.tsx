@@ -124,14 +124,16 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({ onDatasetLoade
   };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
-        processCSV(text, file.name);
-      };
-      reader.readAsText(file);
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      Array.from(files).forEach((file: File) => {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const text = event.target?.result as string;
+          processCSV(text, file.name);
+        };
+        reader.readAsText(file);
+      });
     }
   };
 
@@ -147,18 +149,23 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({ onDatasetLoade
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     setIsDragging(false);
-    const file = e.dataTransfer.files?.[0];
-    if (file && file.name.endsWith('.csv')) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result as string;
-        processCSV(text, file.name);
-      };
-      reader.readAsText(file);
-    } else if (file) {
-      setErrorMsg("Please drop only standard formatted .csv files.");
+    const files = e.dataTransfer.files;
+    if (files && files.length > 0) {
+      Array.from(files).forEach((file: File) => {
+        if (file.name.endsWith('.csv')) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            const text = event.target?.result as string;
+            processCSV(text, file.name);
+          };
+          reader.readAsText(file);
+        }
+      });
+    } else {
+      setErrorMsg("Please drop standard formatted .csv files.");
     }
   };
+
 
   const handleSelectSample = (sample: SampleDataset) => {
     processCSV(sample.csvContent, sample.name);
@@ -205,8 +212,10 @@ export const DatasetSelector: React.FC<DatasetSelectorProps> = ({ onDatasetLoade
               ref={fileInputRef}
               onChange={handleFileChange}
               accept=".csv"
+              multiple
               className="hidden"
             />
+
 
             {loading ? (
               <div className="flex flex-col items-center py-8">

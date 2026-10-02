@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Dataset, ColumnMetadata } from '../types';
-import { ArrowUpDown, HelpCircle, Search, ChevronLeft, ChevronRight, BarChart4 } from 'lucide-react';
+import { exportDatasetToExcel } from '../utils/exportReport';
+import { ArrowUpDown, HelpCircle, Search, ChevronLeft, ChevronRight, BarChart4, FileSpreadsheet } from 'lucide-react';
 
 interface TablePreviewProps {
   dataset: Dataset;
@@ -92,7 +93,15 @@ export const TablePreview: React.FC<TablePreviewProps> = ({ dataset }) => {
           />
         </div>
 
-        <div className="flex items-center gap-3 w-full sm:w-auto justify-end">
+        <div className="flex items-center gap-3 w-full sm:w-auto justify-end flex-wrap">
+          <button
+            onClick={() => exportDatasetToExcel({ ...dataset, rows: processedRows })}
+            className="py-2 px-3 bg-emerald-50 hover:bg-emerald-100/70 border border-emerald-100 rounded-lg text-xs font-semibold text-emerald-700 flex items-center gap-1.5 cursor-pointer transition"
+          >
+            <FileSpreadsheet className="w-3.5 h-3.5" />
+            <span>Download Excel</span>
+          </button>
+
           <span className="text-xs text-gray-500 font-mono">Rows per page:</span>
           <select
             value={pageSize}
@@ -112,6 +121,7 @@ export const TablePreview: React.FC<TablePreviewProps> = ({ dataset }) => {
           </span>
         </div>
       </div>
+
 
       {/* Grid columns inspect rail */}
       <div className="flex flex-col lg:flex-row gap-6">
