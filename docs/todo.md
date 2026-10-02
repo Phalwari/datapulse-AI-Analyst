@@ -28,12 +28,12 @@
 ## 📋 Roadmap Phases (from `docs/implementation_plan.md`)
 
 ### Phase 2: Enhanced Data Wrangling & Profiling Node [HIGH]
-- [ ] Replace stub in `backend/agents/nodes.py` (`data_wrangling_node`) with real DuckDB columnar profiling:
-  - [ ] Calculate non-null counts, null percentages, and unique counts per column.
-  - [ ] Compute numeric distributions: min, max, median, 25%/75% quartiles, standard deviation.
-  - [ ] Identify top categorical frequency values.
-- [ ] Populate `AgentState.data_profile` with summary statistics to ground SQL generation and prevent hallucinations.
-- [ ] Add statistical anomaly warnings (IQR bounds $1.5 \times \text{IQR}$) in initial dataset screening.
+- [x] Replace stub in `backend/agents/nodes.py` (`data_wrangling_node`) with real DuckDB columnar profiling:
+  - [x] Calculate non-null counts, null percentages, and unique counts per column.
+  - [x] Compute numeric distributions: min, max, median, 25%/75% quartiles, standard deviation.
+  - [x] Identify top categorical frequency values.
+- [x] Populate `AgentState.data_profile` with summary statistics to ground SQL generation and prevent hallucinations.
+- [x] Add statistical anomaly warnings (IQR bounds $1.5 \times \text{IQR}$) in initial dataset screening (`/api/analyze-metadata`) and conversational agent steps.
 
 ### Phase 3: Wiring Python ML Sandbox to Agent Orchestrator [MEDIUM]
 - [ ] Add conditional routing in `backend/agents/orchestrator.py` for statistical/ML queries:

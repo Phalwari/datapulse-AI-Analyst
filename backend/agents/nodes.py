@@ -7,9 +7,11 @@ from typing import List, Optional, Dict, Any
 try:
     from backend.semantic_store import SemanticStore
     from backend.utils.llm import call_llm
+    from backend.utils.profiler import profile_duckdb_table
 except ImportError:
     from semantic_store import SemanticStore
     from utils.llm import call_llm
+    from utils.profiler import profile_duckdb_table
 
 
 
@@ -25,6 +27,8 @@ class AgentState(BaseModel):
     csv_path: str = ""
     datasets: List[DatasetInfo] = []
     columns_by_table: Dict[str, List[Dict[str, str]]] = {}
+    data_profile: Dict[str, Any] = Field(default_factory=dict)
+    data_profile_summary: str = ""
     semantic_context: str = ""
     sql_query: str = ""
     query_results: List[Dict[str, Any]] = []
@@ -78,14 +82,59 @@ def validation_node(state: AgentState) -> Dict[str, Any]:
 
 # --- 2. Data Wrangling Agent ---
 def data_wrangling_node(state: AgentState) -> Dict[str, Any]:
-    print("[Data Wrangling Node] Auditing constraints and datatypes...")
+    print("[Data Wrangling Node] Auditing constraints, null rates & statistical anomalies...")
     steps = state.agent_steps.copy()
+
+    profiles = {}
+    combined_summaries = []
+    all_anomalies = []
+
+    active_datasets = state.datasets.copy() if state.datasets else []
+    if not active_datasets and state.csv_path:
+        active_datasets.append(DatasetInfo(name=state.dataset_name, csv_path=state.csv_path))
+
+    con = duckdb.connect(database=":memory:")
+    try:
+        for ds in active_datasets:
+            if not ds.csv_path or not os.path.exists(ds.csv_path):
+                continue
+            table_name = sanitize_table_name(ds.name)
+            clean_path = os.path.abspath(ds.csv_path).replace("\\", "/")
+            con.execute(f"CREATE TABLE \"{table_name}\" AS SELECT * FROM read_csv_auto('{clean_path}')")
+
+            table_profile = profile_duckdb_table(con, table_name, max_columns=35)
+            profiles[table_name] = table_profile
+
+            if table_profile.get("summary_text"):
+                combined_summaries.append(table_profile["summary_text"])
+            if table_profile.get("anomalies"):
+                all_anomalies.extend(table_profile["anomalies"])
+    except Exception as e:
+        print(f"[Data Wrangling Node] Profiling exception: {e}")
+    finally:
+        con.close()
+
+    total_cols = sum(len(p.get("columns", {})) for p in profiles.values())
+    if all_anomalies:
+        sample_alert = all_anomalies[0]
+        if len(sample_alert) > 75:
+            sample_alert = sample_alert[:72] + "..."
+        detail_msg = f"Audited {total_cols} columns across {len(active_datasets)} tables. Flagged {len(all_anomalies)} anomaly warnings ({sample_alert})."
+    else:
+        detail_msg = f"Audited {total_cols} columns across {len(active_datasets)} tables. High data integrity verified with 0 anomalies."
+
     steps.append({
         "node": "wrangling",
-        "title": "Constraint & Null Count Audit",
-        "detail": "Audited column datatypes and missing record bounds.",
+        "title": "Constraint, Null & Outlier Audit",
+        "detail": detail_msg,
+        "anomalies": all_anomalies[:5],
     })
-    return {"agent_steps": steps}
+
+    return {
+        "data_profile": profiles,
+        "data_profile_summary": "\n\n".join(combined_summaries),
+        "agent_steps": steps,
+    }
 
 
 # --- 3. Schema Discovery Agent ---
@@ -123,6 +172,8 @@ def sql_execution_node(state: AgentState) -> Dict[str, Any]:
     tables_summary = "\n\n".join(tables_summary_lines)
     primary_table = list(state.columns_by_table.keys())[0] if state.columns_by_table else "data_table"
 
+    profile_context = f"\nData Profiling & Quality Context:\n{state.data_profile_summary}\n" if state.data_profile_summary else ""
+
     system_prompt = f"""You are a senior database engineer. 
 Write a DuckDB SQL query to answer the user's question. You can query or JOIN across available tables.
 Return ONLY the SQL query itself, with NO formatting, codeblocks, or explanatory text.
@@ -132,7 +183,7 @@ Available Tables & Schemas:
 
 Semantic Layer Context:
 {state.semantic_context}
-
+{profile_context}
 DuckDB Query Rules:
 - If querying a single dataset, reference table '{primary_table}'.
 - If querying multiple datasets, JOIN them using logical key columns (e.g. matching IDs, names, dates).
@@ -269,9 +320,11 @@ You MUST respond with a JSON object conforming exactly to this schema:
   "suggested_questions": ["Question 1", "Question 2", "Question 3"]
 }"""
 
+    profile_info = f"\nData Quality & Profiling Highlights:\n{state.data_profile_summary}" if state.data_profile_summary else ""
+
     prompt = f"""User Query: "{state.query}"
 SQL Query Executed: {state.sql_query}
-Query Results: {json.dumps(state.query_results[:15], default=str)}"""
+Query Results: {json.dumps(state.query_results[:15], default=str)}{profile_info}"""
 
     try:
         response_text = call_llm(prompt=prompt, system_instruction=system_prompt, json_mode=True)
@@ -297,8 +350,12 @@ Query Results: {json.dumps(state.query_results[:15], default=str)}"""
                 for r in state.query_results[:5]
             ])
             answer_md = f"### Analytical Summary\nProcessed **{len(state.query_results)}** matching records.\n\n{rows_md}"
+            if state.data_profile_summary:
+                answer_md += f"\n\n#### Dataset Quality & Distribution Overview\n{state.data_profile_summary}"
         else:
             answer_md = "Analysis complete. No matching rows returned."
+            if state.data_profile_summary:
+                answer_md += f"\n\n#### Dataset Overview\n{state.data_profile_summary}"
 
         return {
             "answer": answer_md,

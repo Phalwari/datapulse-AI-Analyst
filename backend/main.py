@@ -19,10 +19,12 @@ try:
     from backend.semantic_store import SemanticStore
     from backend.agents.orchestrator import run_agent_orchestrator
     from backend.utils.llm import call_llm
+    from backend.utils.profiler import profile_dataset_file
 except ImportError:
     from semantic_store import SemanticStore
     from agents.orchestrator import run_agent_orchestrator
     from utils.llm import call_llm
+    from utils.profiler import profile_dataset_file
 
 load_dotenv()
 
@@ -124,9 +126,21 @@ async def analyze_metadata(req: AnalyzeMetadataRequest):
                 sample_values=samples,
             )
 
+        # Profile tabular dataset using DuckDB
+        profile_summary = ""
+        anomalies = []
+        if os.path.exists(csv_path):
+            try:
+                prof = profile_dataset_file(csv_path, table_name="dataset_table", max_columns=35)
+                profile_summary = prof.get("summary_text", "")
+                anomalies = prof.get("anomalies", [])
+            except Exception as prof_err:
+                print(f"[Analyze Metadata] Profiling warning: {prof_err}")
+
         # Call LLM to perform initial screening analysis
         system_prompt = """You are a principal business intelligence analyst.
-Analyze the dataset structure and generate screening info.
+Analyze the dataset structure and statistical profile to generate executive screening info.
+Highlight any data quality issues, missingness, or statistical anomalies detected.
 You MUST respond with a JSON object conforming exactly to this schema:
 {
   "summary": "overview summarizing what this dataset represents and data quality check",
@@ -151,10 +165,11 @@ You MUST respond with a JSON object conforming exactly to this schema:
   ]
 }"""
 
+        profile_sec = f"\nStatistical Profile & Anomaly Flags:\n{profile_summary}\n" if profile_summary else ""
         prompt = f"""Dataset Name: {csv_name}
 Total Row Count: {req.rowCount}
 Columns Specifications: {json.dumps([col.dict() for col in req.columns])}
-Sample Rows: {json.dumps(req.sampleRows[:5])}"""
+{profile_sec}Sample Rows: {json.dumps(req.sampleRows[:5])}"""
 
         try:
             response_text = call_llm(prompt=prompt, system_instruction=system_prompt, json_mode=True)
@@ -165,20 +180,32 @@ Sample Rows: {json.dumps(req.sampleRows[:5])}"""
             x_col = req.columns[0].name if req.columns else "index"
             y_col = num_cols[0] if num_cols else (req.columns[1].name if len(req.columns) > 1 else x_col)
 
+            fallback_insights = [
+                {
+                    "title": "Dataset Successfully Ingested",
+                    "description": f"Registered {req.rowCount} data rows and {len(req.columns)} table schema columns.",
+                    "type": "positive",
+                }
+            ]
+            for a in anomalies[:2]:
+                fallback_insights.append({
+                    "title": "Statistical Anomaly Detected",
+                    "description": a,
+                    "type": "anomaly",
+                })
+
+            summary_text = f"Dataset `{csv_name}` loaded with {req.rowCount} records across {len(req.columns)} attributes."
+            if profile_summary:
+                summary_text += f"\n\n{profile_summary}"
+
             res_data = {
-                "summary": f"Dataset `{csv_name}` loaded with {req.rowCount} records across {len(req.columns)} attributes. Initial metadata indexing complete.",
+                "summary": summary_text,
                 "businessQuestions": [
                     f"What is the distribution of {y_col} across {x_col}?",
                     f"Are there any outliers in {y_col}?",
                     "How do metrics correlate across datasets?",
                 ],
-                "insights": [
-                    {
-                        "title": "Dataset Successfully Ingested",
-                        "description": f"Registered {req.rowCount} data rows and {len(req.columns)} table schema columns.",
-                        "type": "positive",
-                    }
-                ],
+                "insights": fallback_insights,
                 "charts": [
                     {
                         "id": "chart_default_1",
@@ -191,6 +218,16 @@ Sample Rows: {json.dumps(req.sampleRows[:5])}"""
                     }
                 ],
             }
+
+        # Inject concrete anomaly alerts if not already included by LLM
+        existing_insight_desc = " ".join([i.get("description", "") for i in res_data.get("insights", [])])
+        for alert in anomalies[:2]:
+            if alert[:30] not in existing_insight_desc:
+                res_data.setdefault("insights", []).append({
+                    "title": "Statistical Anomaly Alert",
+                    "description": alert,
+                    "type": "anomaly",
+                })
 
         # Normalize common casing mismatches to prevent frontend crashes
         if "business_questions" in res_data:

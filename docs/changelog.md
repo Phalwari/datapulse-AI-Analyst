@@ -9,14 +9,26 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- **DuckDB Tabular Profiler & Anomaly Engine (`backend/utils/profiler.py`)**:
+  - Computes exact column datatypes, null counts, null percentages, and distinct cardinalities.
+  - Generates comprehensive distribution statistics for numeric attributes (min, max, mean, standard deviation, quartiles Q25/Q75, and median).
+  - Implements Tukey $1.5 \times \text{IQR}$ statistical outlier detection with automated anomaly warning thresholds.
+  - Extracts top-3 dominant value frequencies for categorical/text columns.
+- **Enhanced Data Wrangling Agent Node (`data_wrangling_node`)**:
+  - Replaced static stub with live DuckDB profiling across all active memory-loaded datasets.
+  - Integrated `data_profile` metrics and narrative summaries into `sql_execution_node` and `synthesis_node` prompts.
+  - Added live anomaly warnings to `agent_steps` rendered in the frontend chat console.
+- **Enhanced Dataset Screening (`/api/analyze-metadata`)**:
+  - Initial dataset screening now runs DuckDB profiling on uploaded CSVs to ground executive summaries, business questions, and auto-generate anomaly insight cards.
+
 ### Fixed
 - Resolved `ModuleNotFoundError: No module named 'backend'` by adding dynamic `sys.path` injection and fallback imports across `backend/main.py`, `backend/agents/nodes.py`, and `backend/agents/orchestrator.py`.
 - Added dual static assets directory lookup in `backend/main.py` to support both local development and Docker runner paths.
 
 ### Planned
-- Real DuckDB data profiling and null-distribution auditing in `data_wrangling_node`.
-- Connection of `SubprocessSandbox` to the LangGraph orchestrator for statistical and ML inquiries.
-- Server-Sent Events (SSE) streaming endpoint `/api/chat/stream` for real-time thought visualization in React.
+- Connection of `SubprocessSandbox` to the LangGraph orchestrator for statistical and ML inquiries (Phase 3).
+- Server-Sent Events (SSE) streaming endpoint `/api/chat/stream` for real-time thought visualization in React (Phase 4).
 
 ---
 
