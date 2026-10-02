@@ -19,8 +19,9 @@
 - [x] Create centralized documentation directory in `docs/` (`implementation_plan.md`, `agent.md`, `todo.md`, `changelog.md`).
 - [x] Add `sys.path` resolver / flexible imports in `backend/main.py`, `backend/agents/nodes.py`, and `backend/agents/orchestrator.py` to fix `ModuleNotFoundError: No module named 'backend'` when running inside `backend/` or Docker.
 - [x] Verify local backend execution: `python -c "import main; print('Backend loaded successfully')"` in `backend/`.
-- [-] Stage and commit the directory refactoring (`backend/`, `frontend/`, `docs/`) to git.
-- [ ] Push to `origin/main` and verify GitHub Actions CI Pipeline and Hugging Face sync.
+- [x] Stage and commit the directory refactoring (`backend/`, `frontend/`, `docs/`) to git.
+- [x] Push to `origin/main` and verify GitHub Actions CI Pipeline (Both Frontend Build and Backend Verify passed).
+- [ ] *(Optional)* Renew expired Hugging Face `HF_TOKEN` in GitHub repository secrets for HF Spaces auto-sync.
 
 ---
 
